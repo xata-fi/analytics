@@ -38,6 +38,7 @@ import FormattedName from '../components/FormattedName'
 import { useListedTokens } from '../contexts/Application'
 import HoverText from '../components/HoverText'
 import { UNTRACKED_COPY, PAIR_BLACKLIST, BLOCKED_WARNINGS } from '../constants'
+import chainConfig from '../chainConfig.json'
 
 const DashboardWrapper = styled.div`
   width: 100%;
@@ -195,6 +196,8 @@ function PairPage({ pairAddress, history }) {
 
   const listedTokens = useListedTokens()
 
+  const { scannerUrl, scannerName } = chainConfig[process.env.REACT_APP_CHAIN]
+
   if (PAIR_BLACKLIST.includes(pairAddress)) {
     return (
       <BlockedWrapper>
@@ -203,7 +206,7 @@ function PairPage({ pairAddress, history }) {
             <TYPE.light style={{ textAlign: 'center' }}>
               {BLOCKED_WARNINGS[pairAddress] ?? `This pair is not supported.`}
             </TYPE.light>
-            <Link external={true} href={'https://etherscan.io/address/' + pairAddress}>{`More about ${shortenAddress(
+            <Link external={true} href={`https://${scannerUrl}/address/` + pairAddress}>{`More about ${shortenAddress(
               pairAddress
             )}`}</Link>
           </AutoColumn>
@@ -500,8 +503,8 @@ function PairPage({ pairAddress, history }) {
                     </AutoRow>
                   </Column>
                   <ButtonLight color={backgroundColor}>
-                    <Link color={backgroundColor} external href={'https://etherscan.io/address/' + pairAddress}>
-                      View on Etherscan ↗
+                    <Link color={backgroundColor} external href={`https://${scannerUrl}/address/` + pairAddress}>
+                      View on {scannerName} ↗
                     </Link>
                   </ButtonLight>
                 </TokenDetailsLayout>

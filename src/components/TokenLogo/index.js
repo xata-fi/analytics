@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { isAddress } from '../../utils/index.js'
 import EthereumLogo from '../../assets/eth.png'
+import chainConfig from '../../chainConfig.json'
 
 const BAD_IMAGES = {}
 
@@ -70,8 +71,8 @@ export default function TokenLogo({ address, header = false, size = '24px', ...r
       </StyledEthereumLogo>
     )
   }
-  const chain = 'smartchain'
-  const path = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/${chain}/assets/${isAddress(
+  const { trustwalletChain } = chainConfig[process.env.REACT_APP_CHAIN]
+  const path = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/${trustwalletChain}/assets/${isAddress(
     address
   )}/logo.png`
 
