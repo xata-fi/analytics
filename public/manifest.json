@@ -1,6 +1,6 @@
 {
-  "short_name": "Uniswap Info",
-  "name": "View statistics for Uniswap exchanges.",
+  "short_name": "XATA Info",
+  "name": "View statistics for xata.fi exchanges.",
   "icons": [
     {
       "src": "./images/android-icon-192x192.png",
