@@ -9,7 +9,7 @@ import { AutoColumn } from '../Column'
 import { Hover } from '..'
 import Link from '../Link'
 import { useMedia } from 'react-use'
-import chainConfig from '../../chainConfig.json'
+import { chainConfig } from '../../chainConfig'
 
 const WarningWrapper = styled.div`
   border-radius: 20px;

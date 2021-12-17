@@ -19,7 +19,7 @@ import LocalLoader from './components/LocalLoader'
 import { useLatestBlocks } from './contexts/Application'
 import GoogleAnalyticsReporter from './components/analytics/GoogleAnalyticsReporter'
 import { PAIR_BLACKLIST, TOKEN_BLACKLIST } from './constants'
-import chainConfig from './chainConfig.json'
+import { chainConfig } from './chainConfig'
 
 const AppWrapper = styled.div`
   position: relative;

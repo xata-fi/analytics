@@ -21,7 +21,7 @@ import { BasicLink } from '../components/Link'
 import { useMedia } from 'react-use'
 import Search from '../components/Search'
 import { useSavedAccounts } from '../contexts/LocalStorage'
-import chainConfig from '../chainConfig.json'
+import { chainConfig } from '../chainConfig'
 
 const AccountWrapper = styled.div`
   background-color: rgba(255, 255, 255, 0.2);

@@ -16,7 +16,7 @@ import DropdownSelect from '../DropdownSelect'
 import FormattedName from '../FormattedName'
 import { TYPE } from '../../Theme'
 import { updateNameData } from '../../utils/data'
-import chainConfig from '../../chainConfig.json'
+import { chainConfig } from '../../chainConfig'
 
 dayjs.extend(utc)
 

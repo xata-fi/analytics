@@ -4,7 +4,7 @@ import Vibrant from 'node-vibrant'
 import { hex } from 'wcag-contrast'
 import { isAddress } from '../utils'
 import copy from 'copy-to-clipboard'
-import chainConfig from '../chainConfig.json'
+import { chainConfig } from '../chainConfig'
 
 const { blockchainName } = chainConfig[process.env.REACT_APP_CHAIN]
 

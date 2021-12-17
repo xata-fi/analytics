@@ -35,7 +35,7 @@ import { UNTRACKED_COPY, TOKEN_BLACKLIST, BLOCKED_WARNINGS } from '../constants'
 import QuestionHelper from '../components/QuestionHelper'
 import Checkbox from '../components/Checkbox'
 import { shortenAddress } from '../utils'
-import chainConfig from '../chainConfig.json'
+import { chainConfig } from '../chainConfig'
 
 const DashboardWrapper = styled.div`
   width: 100%;

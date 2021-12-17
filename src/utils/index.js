@@ -10,7 +10,7 @@ import _Decimal from 'decimal.js-light'
 import toFormat from 'toformat'
 import { timeframeOptions } from '../constants'
 import Numeral from 'numeral'
-import chainConfig from '../chainConfig.json'
+import { chainConfig } from '../chainConfig'
 
 // format libraries
 const Decimal = toFormat(_Decimal)
