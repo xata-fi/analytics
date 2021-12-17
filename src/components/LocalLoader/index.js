@@ -1,6 +1,5 @@
 import React from 'react'
 import styled, { css, keyframes } from 'styled-components'
-import { useDarkModeManager } from '../../contexts/LocalStorage'
 import xata_logo from '../../assets/xata-logo.png'
 
 const pulse = keyframes`
@@ -35,8 +34,6 @@ const AnimatedImg = styled.div`
 `
 
 const LocalLoader = ({ fill }) => {
-  const [darkMode] = useDarkModeManager()
-
   return (
     <Wrapper fill={fill}>
       <AnimatedImg>
