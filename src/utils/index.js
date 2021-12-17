@@ -47,10 +47,6 @@ export function getSwapLink() {
   return "https://app.xata.fi/#/swap"
 }
 
-export function getMiningPoolLink(token0Address) {
-  return `https://app.uniswap.org/#/uni/ETH/${token0Address}`
-}
-
 export function getUniswapAppLink(linkVariable) {
   let baseUniswapUrl = 'https://app.uniswap.org/#/uni'
   if (!linkVariable) {
