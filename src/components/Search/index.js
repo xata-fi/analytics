@@ -430,10 +430,10 @@ export const Search = ({ small = false }) => {
               : below410
               ? 'Search...'
               : below470
-              ? 'Search Xata...'
+              ? 'Search XATA...'
               : below700
               ? 'Search pairs and tokens...'
-              : 'Search Xata pairs and tokens...'
+              : 'Search XATA pairs and tokens...'
           }
           value={value}
           onChange={(e) => {
