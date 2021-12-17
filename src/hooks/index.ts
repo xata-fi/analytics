@@ -4,11 +4,14 @@ import Vibrant from 'node-vibrant'
 import { hex } from 'wcag-contrast'
 import { isAddress } from '../utils'
 import copy from 'copy-to-clipboard'
+import { chainConfig } from '../chainConfig'
+
+const { blockchainName } = chainConfig[process.env.REACT_APP_CHAIN]
 
 export function useColor(tokenAddress, token) {
   const [color, setColor] = useState('#2172E5')
   if (tokenAddress) {
-    const path = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${isAddress(
+    const path = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/${blockchainName}/assets/${isAddress(
       tokenAddress
     )}/logo.png`
     if (path) {
