@@ -16,6 +16,7 @@ import DropdownSelect from '../DropdownSelect'
 import FormattedName from '../FormattedName'
 import { TYPE } from '../../Theme'
 import { updateNameData } from '../../utils/data'
+import { chainConfig } from '../../chainConfig'
 
 dayjs.extend(utc)
 
@@ -279,6 +280,7 @@ function TxnList({ transactions, symbol0Override, symbol1Override, color }) {
   const below1080 = useMedia('(max-width: 1080px)')
   const below780 = useMedia('(max-width: 780px)')
 
+  const { scannerUrl } = chainConfig[process.env.REACT_APP_CHAIN]
   const ListItem = ({ item }) => {
     return (
       <DashGrid style={{ height: '48px' }}>
@@ -304,7 +306,7 @@ function TxnList({ transactions, symbol0Override, symbol1Override, color }) {
         )}
         {!below1080 && (
           <DataText area="account">
-            <Link color={color} external href={'https://etherscan.io/address/' + item.account}>
+            <Link color={color} external href={`https://${scannerUrl}/address/` + item.account}>
               {item.account && item.account.slice(0, 6) + '...' + item.account.slice(38, 42)}
             </Link>
           </DataText>
