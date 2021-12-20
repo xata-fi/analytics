@@ -1,22 +1,22 @@
 {
   "files": {
-    "main.js": "/analytics/static/js/main.751ac9e5.chunk.js",
-    "main.js.map": "/analytics/static/js/main.751ac9e5.chunk.js.map",
+    "main.js": "/analytics/static/js/main.e66794a3.chunk.js",
+    "main.js.map": "/analytics/static/js/main.e66794a3.chunk.js.map",
     "runtime-main.js": "/analytics/static/js/runtime-main.8aa2e56d.js",
     "runtime-main.js.map": "/analytics/static/js/runtime-main.8aa2e56d.js.map",
-    "static/js/2.6f0896fb.chunk.js": "/analytics/static/js/2.6f0896fb.chunk.js",
-    "static/js/2.6f0896fb.chunk.js.map": "/analytics/static/js/2.6f0896fb.chunk.js.map",
+    "static/js/2.a68b4d8c.chunk.js": "/analytics/static/js/2.a68b4d8c.chunk.js",
+    "static/js/2.a68b4d8c.chunk.js.map": "/analytics/static/js/2.a68b4d8c.chunk.js.map",
     "index.html": "/analytics/index.html",
-    "precache-manifest.00ea9c8b277493dab83db380bd7d14c8.js": "/analytics/precache-manifest.00ea9c8b277493dab83db380bd7d14c8.js",
+    "precache-manifest.2e44fa9c6c87a8a36f6a84af73d1f4c3.js": "/analytics/precache-manifest.2e44fa9c6c87a8a36f6a84af73d1f4c3.js",
     "service-worker.js": "/analytics/service-worker.js",
-    "static/js/2.6f0896fb.chunk.js.LICENSE.txt": "/analytics/static/js/2.6f0896fb.chunk.js.LICENSE.txt",
+    "static/js/2.a68b4d8c.chunk.js.LICENSE.txt": "/analytics/static/js/2.a68b4d8c.chunk.js.LICENSE.txt",
     "static/media/eth.png": "/analytics/static/media/eth.5fc0c9bd.png",
     "static/media/xata-brand.svg": "/analytics/static/media/xata-brand.b5870747.svg",
     "static/media/xata-logo.png": "/analytics/static/media/xata-logo.0286e04c.png"
   },
   "entrypoints": [
     "static/js/runtime-main.8aa2e56d.js",
-    "static/js/2.6f0896fb.chunk.js",
-    "static/js/main.751ac9e5.chunk.js"
+    "static/js/2.a68b4d8c.chunk.js",
+    "static/js/main.e66794a3.chunk.js"
   ]
 }
