@@ -317,24 +317,6 @@ function AccountPage({ account }) {
             <PositionList positions={positions} />
           </Panel>
           <TYPE.main fontSize={'1.125rem'} style={{ marginTop: '3rem' }}>
-            Liquidity Mining Pools
-          </TYPE.main>
-          <Panel
-            style={{
-              marginTop: '1.5rem',
-            }}
-          >
-            {miningPositions && <MiningPositionList miningPositions={miningPositions} />}
-            {!miningPositions && (
-              <AutoColumn gap="8px" justify="flex-start">
-                <TYPE.main>No Staked Liquidity.</TYPE.main>
-                <AutoRow gap="8px" justify="flex-start">
-                  <ButtonLight style={{ padding: '4px 6px', borderRadius: '4px' }}>Learn More</ButtonLight>{' '}
-                </AutoRow>{' '}
-              </AutoColumn>
-            )}
-          </Panel>
-          <TYPE.main fontSize={'1.125rem'} style={{ marginTop: '3rem' }}>
             Transactions
           </TYPE.main>{' '}
           <Panel
