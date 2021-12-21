@@ -112,14 +112,22 @@ function GlobalPage() {
             </Box>
           )}
           {!below800 && (
-            <GridRow>
-              <Panel style={{ height: '100%', minHeight: '300px' }}>
-                <GlobalChart display="liquidity" />
-              </Panel>
-              <Panel style={{ height: '100%' }}>
-                <GlobalChart display="volume" />
-              </Panel>
-            </GridRow>
+            <>
+              <AutoColumn gap="20px">
+                <Panel>
+                  <GlobalChart display="MEV" />
+                </Panel>
+                <GridRow>
+                  <Panel style={{ height: '100%', minHeight: '300px' }}>
+                    <GlobalChart display="liquidity" />
+                  </Panel>
+                  <Panel style={{ height: '100%' }}>
+                    <GlobalChart display="volume" />
+                  </Panel>
+                </GridRow>
+              </AutoColumn>
+            </>
+
           )}
           {below800 && (
             <AutoColumn style={{ marginTop: '6px' }} gap="24px">
