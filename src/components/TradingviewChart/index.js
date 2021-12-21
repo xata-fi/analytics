@@ -43,13 +43,13 @@ const TradingViewChart = ({
   useEffect(() => {
     if (data !== dataPrev && chartCreated && type === CHART_TYPES.BAR) {
       // remove the tooltip element
-      let tooltip = document.getElementById('tooltip-id' + type)
-      let node = document.getElementById('test-id' + type)
+      let tooltip = document.getElementById('tooltip-id' + title)
+      let node = document.getElementById('test-id' + title)
       node.removeChild(tooltip)
       chartCreated.resize(0, 0)
       setChartCreated()
     }
-  }, [chartCreated, data, dataPrev, type])
+  }, [chartCreated, data, dataPrev, type, title])
 
   // parese the data and format for tardingview consumption
   const formattedData = data?.map((entry) => {
@@ -70,13 +70,13 @@ const TradingViewChart = ({
   useEffect(() => {
     if (chartCreated && previousTheme !== darkMode) {
       // remove the tooltip element
-      let tooltip = document.getElementById('tooltip-id' + type)
-      let node = document.getElementById('test-id' + type)
+      let tooltip = document.getElementById('tooltip-id' + title)
+      let node = document.getElementById('test-id' + title)
       node.removeChild(tooltip)
       chartCreated.resize(0, 0)
       setChartCreated()
     }
-  }, [chartCreated, darkMode, previousTheme, type])
+  }, [chartCreated, darkMode, previousTheme, type, title])
 
   // if no chart created yet, create one with options and add to DOM manually
   useEffect(() => {
@@ -149,7 +149,7 @@ const TradingViewChart = ({
 
       series.setData(formattedData)
       var toolTip = document.createElement('div')
-      toolTip.setAttribute('id', 'tooltip-id' + type)
+      toolTip.setAttribute('id', 'tooltip-id' + title)
       toolTip.className = darkMode ? 'three-line-legend-dark' : 'three-line-legend'
       ref.current.appendChild(toolTip)
       toolTip.style.display = 'block'
@@ -239,7 +239,7 @@ const TradingViewChart = ({
 
   return (
     <Wrapper>
-      <div ref={ref} id={'test-id' + type} />
+      <div ref={ref} id={'test-id' + title} />
       <IconWrapper>
         <Play
           onClick={() => {

@@ -75,7 +75,7 @@ function GlobalPage() {
             <TYPE.largeHeader>{below800 ? 'XATA Analytics' : 'XATA Analytics'}</TYPE.largeHeader>
             <Search />
           </AutoColumn>
-          {below800 && ( // mobile card
+          {below800 && ( // additional mobile card that shows on top of charts
             <Box mb={20}>
               <Panel>
                 <Box>
