@@ -114,7 +114,6 @@ function GlobalPage() {
           {!below800 && (
             <>
               <AutoColumn gap="20px">
-                <Panel>
                 <Panel style={{ height: '100%', minHeight: '300px' }}>
                   <GlobalChart display="MEV" />
                 </Panel>
