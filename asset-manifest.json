@@ -1,22 +1,22 @@
 {
   "files": {
-    "main.js": "/analytics/static/js/main.d26c1666.chunk.js",
-    "main.js.map": "/analytics/static/js/main.d26c1666.chunk.js.map",
-    "runtime-main.js": "/analytics/static/js/runtime-main.8aa2e56d.js",
-    "runtime-main.js.map": "/analytics/static/js/runtime-main.8aa2e56d.js.map",
-    "static/js/2.a68b4d8c.chunk.js": "/analytics/static/js/2.a68b4d8c.chunk.js",
-    "static/js/2.a68b4d8c.chunk.js.map": "/analytics/static/js/2.a68b4d8c.chunk.js.map",
-    "index.html": "/analytics/index.html",
-    "precache-manifest.26faf50c88050642e510869ce8414b1a.js": "/analytics/precache-manifest.26faf50c88050642e510869ce8414b1a.js",
-    "service-worker.js": "/analytics/service-worker.js",
-    "static/js/2.a68b4d8c.chunk.js.LICENSE.txt": "/analytics/static/js/2.a68b4d8c.chunk.js.LICENSE.txt",
-    "static/media/eth.png": "/analytics/static/media/eth.5fc0c9bd.png",
-    "static/media/xata-brand.svg": "/analytics/static/media/xata-brand.b5870747.svg",
-    "static/media/xata-logo.png": "/analytics/static/media/xata-logo.0286e04c.png"
+    "main.js": "./static/js/main.af2aa331.chunk.js",
+    "main.js.map": "./static/js/main.af2aa331.chunk.js.map",
+    "runtime-main.js": "./static/js/runtime-main.fc23a649.js",
+    "runtime-main.js.map": "./static/js/runtime-main.fc23a649.js.map",
+    "static/js/2.13cbc56b.chunk.js": "./static/js/2.13cbc56b.chunk.js",
+    "static/js/2.13cbc56b.chunk.js.map": "./static/js/2.13cbc56b.chunk.js.map",
+    "index.html": "./index.html",
+    "precache-manifest.36b67c5e8f7c613314f91da7a87ae2f4.js": "./precache-manifest.36b67c5e8f7c613314f91da7a87ae2f4.js",
+    "service-worker.js": "./service-worker.js",
+    "static/js/2.13cbc56b.chunk.js.LICENSE.txt": "./static/js/2.13cbc56b.chunk.js.LICENSE.txt",
+    "static/media/eth.png": "./static/media/eth.5fc0c9bd.png",
+    "static/media/xata-brand.svg": "./static/media/xata-brand.b5870747.svg",
+    "static/media/xata-logo.png": "./static/media/xata-logo.0286e04c.png"
   },
   "entrypoints": [
-    "static/js/runtime-main.8aa2e56d.js",
-    "static/js/2.a68b4d8c.chunk.js",
-    "static/js/main.d26c1666.chunk.js"
+    "static/js/runtime-main.fc23a649.js",
+    "static/js/2.13cbc56b.chunk.js",
+    "static/js/main.af2aa331.chunk.js"
   ]
 }
