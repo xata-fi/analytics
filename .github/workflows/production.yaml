@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    name: Build xata.fi production
+    name: Build xata-fi/analytics-production
     runs-on: ubuntu-latest
 
     steps:
@@ -35,5 +35,5 @@ jobs:
         with:
           branch: gh-pages
           folder: build
-          repository-name: automata-network/xata.fi-production
+          repository-name: xata-fi/analytics-production
           ssh-key: ${{ secrets.PRODUCTION_DEPLOY_KEY }}
