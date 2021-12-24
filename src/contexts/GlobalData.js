@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useMemo, useCallback, useEffect, useState } from 'react'
-import { client } from '../apollo/client'
+import { client, mevClient } from '../apollo/client'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { useTimeframe } from './Application'
@@ -12,6 +12,7 @@ import {
 } from '../utils'
 import {
   GLOBAL_DATA,
+  MEV_CHART,
   GLOBAL_TXNS,
   GLOBAL_CHART,
   ETH_PRICE,
@@ -30,6 +31,7 @@ const ETH_PRICE_KEY = 'ETH_PRICE_KEY'
 const UPDATE_ALL_PAIRS_IN_XATA = 'UPDATE_ALL_PAIRS_IN_XATA'
 const UPDATE_ALL_TOKENS_IN_XATA = 'UPDATE_ALL_TOKENS_IN_XATA'
 const UPDATE_TOP_LPS = 'UPDATE_TOP_LPS'
+const UPDATE_MEV_CHART = 'UPDATE_MEV_CHART'
 
 const offsetVolumes = [
   '0x9ea3b5b4ec044b70375236a281986106457b20ef',
@@ -73,6 +75,15 @@ function reducer(state, { type, payload }) {
           daily,
           weekly,
         },
+      }
+    }
+    case UPDATE_MEV_CHART: {
+      const { daily } = payload
+      return {
+        ...state,
+        MEVChartData: {
+          daily
+        }
       }
     }
     case UPDATE_ETH_PRICE: {
@@ -142,6 +153,14 @@ export default function Provider({ children }) {
       },
     })
   }, [])
+  const updateMEVChart = useCallback((daily) => {
+    dispatch({
+      type: UPDATE_MEV_CHART,
+      payload: {
+        daily
+      }
+    })
+  }, [])
 
   const updateEthPrice = useCallback((ethPrice, oneDayPrice, ethPriceChange) => {
     dispatch({
@@ -189,6 +208,7 @@ export default function Provider({ children }) {
             update,
             updateTransactions,
             updateChart,
+            updateMEVChart,
             updateEthPrice,
             updateTopLps,
             updateAllPairsInXata,
@@ -201,6 +221,7 @@ export default function Provider({ children }) {
           updateTransactions,
           updateTopLps,
           updateChart,
+          updateMEVChart,
           updateEthPrice,
           updateAllPairsInXata,
           updateAllTokensInXata,
@@ -424,6 +445,28 @@ const getChartData = async (oldestDateToFetch, offsetData) => {
   return [data, weeklyData]
 }
 
+export const getMEVChartData = async (oldestDateToFetch, offsetData) => {
+  let data = []
+  let allFound = false
+
+  try {
+    while (!allFound) {
+      let result = await mevClient.query({
+        query: MEV_CHART,
+        fetchPolicy: 'cache-first',
+      })
+      data = data.concat(result.data.xatadayMEVDatas)
+      if (result.data.xatadayMEVDatas.length < 1000) {
+        allFound = true
+      }
+    }
+
+  } catch(e) {
+    console.log(e)
+  }
+  return data
+}
+
 /**
  * Get and format transactions for global page
  */
@@ -570,7 +613,6 @@ export function useGlobalData() {
   useEffect(() => {
     async function fetchData() {
       let globalData = await getGlobalData(ethPrice, oldEthPrice)
-
       globalData && update(globalData)
 
       let allPairs = await getAllPairsOnXata()
@@ -628,6 +670,39 @@ export function useGlobalChartData() {
   }, [chartDataDaily, chartDataWeekly, combinedData, oldestDateFetch, updateChart])
 
   return [chartDataDaily, chartDataWeekly]
+}
+
+export function useMEVChartData() {
+  const [state, { updateMEVChart }] = useGlobalDataContext()
+  const [oldestDateFetch, setOldestDateFetched] = useState()
+  const [activeWindow] = useTimeframe() 
+  
+  const mevDataDaily = state?.MEVChartData?.daily
+
+  /**
+   * Keep track of oldest date fetched. Used to
+   * limit data fetched until its actually needed.
+   * (dont fetch year long stuff unless year option selected)
+   */
+  useEffect(() => {
+    let startTime = getTimeframe(activeWindow)
+
+    if ((activeWindow && startTime < oldestDateFetch) || !oldestDateFetch) {
+      setOldestDateFetched(startTime)
+    }
+  }, [activeWindow, oldestDateFetch])
+
+  useEffect(() => {
+    async function fetchData() {
+      //historical stuff for chart
+      let newChartData = await getMEVChartData()
+      updateMEVChart(newChartData)
+    }
+    if (oldestDateFetch && !mevDataDaily) {
+      fetchData()
+    }
+  }, [mevDataDaily, oldestDateFetch, updateMEVChart])
+  return mevDataDaily
 }
 
 export function useGlobalTransactions() {

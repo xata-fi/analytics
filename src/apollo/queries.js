@@ -423,6 +423,20 @@ export const GLOBAL_DATA = (block) => {
   return gql(queryString)
 }
 
+export const MEV_CHART = gql`
+  query xatadayMEVDatas {
+    xatadayMEVDatas (
+      orderBy: date
+      orderDirection:asc
+    ) {
+      id
+      date
+      totalUnusedSlippageUSD
+    }
+  }
+`
+
+
 export const GLOBAL_TXNS = gql`
   query transactions {
     transactions(first: 100, orderBy: timestamp, orderDirection: desc) {

@@ -1,18 +1,19 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react'
 import { ResponsiveContainer } from 'recharts'
 import { timeframeOptions } from '../../constants'
-import { useGlobalChartData, useGlobalData } from '../../contexts/GlobalData'
+import { useGlobalChartData, useGlobalData, useMEVChartData } from '../../contexts/GlobalData'
 import { useMedia } from 'react-use'
 import DropdownSelect from '../DropdownSelect'
 import TradingViewChart, { CHART_TYPES } from '../TradingviewChart'
 import { RowFixed } from '../Row'
 import { OptionButton } from '../ButtonStyled'
-import { getTimeframe } from '../../utils'
+import { getTimeframe, getPercentChange } from '../../utils'
 import { TYPE } from '../../Theme'
 
 const CHART_VIEW = {
   VOLUME: 'Volume',
   LIQUIDITY: 'Liquidity',
+  MEV: 'MEV'
 }
 
 const VOLUME_WINDOW = {
@@ -21,14 +22,21 @@ const VOLUME_WINDOW = {
 }
 const GlobalChart = ({ display }) => {
   // chart options
-  const [chartView, setChartView] = useState(display === 'volume' ? CHART_VIEW.VOLUME : CHART_VIEW.LIQUIDITY)
+  const [chartView, setChartView] = useState(display === 'volume' ? 
+    CHART_VIEW.VOLUME : display === 'liquidity' ?
+    CHART_VIEW.LIQUIDITY : CHART_VIEW.MEV)
 
   // time window and window size for chart
   const timeWindow = timeframeOptions.ALL_TIME
   const [volumeWindow, setVolumeWindow] = useState(VOLUME_WINDOW.DAYS)
-
+  
   // global historical data
   const [dailyData, weeklyData] = useGlobalChartData()
+  const dailyMEVData = useMEVChartData()
+  
+  const latestTotalMEV = dailyMEVData?.[dailyMEVData.length-1].totalUnusedSlippageUSD
+  const previousTotalMEV = dailyMEVData?.[dailyMEVData.length-2].totalUnusedSlippageUSD
+  const latestMEVChange = getPercentChange(latestTotalMEV, previousTotalMEV)
   const { totalLiquidityUSD, oneDayVolumeUSD, volumeChangeUSD, liquidityChangeUSD, oneWeekVolume, weeklyVolumeChange } =
     useGlobalData()
 
@@ -54,7 +62,6 @@ const GlobalChart = ({ display }) => {
     )
   }, [dailyData, utcStartTime, volumeWindow, weeklyData])
   const below800 = useMedia('(max-width: 800px)')
-
   // update the width on a window resize
   const ref = useRef()
   const isClient = typeof window === 'object'
@@ -100,6 +107,19 @@ const GlobalChart = ({ display }) => {
             width={width}
             type={CHART_TYPES.BAR}
             useWeekly={volumeWindow === VOLUME_WINDOW.WEEKLY}
+          />
+        </ResponsiveContainer>
+      )}
+      {dailyMEVData && chartView === CHART_VIEW.MEV && (
+        <ResponsiveContainer aspect={60 / 28}>
+          <TradingViewChart
+            data={dailyMEVData}
+            base={latestTotalMEV}
+            baseChange={latestMEVChange}
+            title="Cumulative MEV Protected"
+            field="totalUnusedSlippageUSD"
+            width={width}
+            type={CHART_TYPES.AREA}
           />
         </ResponsiveContainer>
       )}

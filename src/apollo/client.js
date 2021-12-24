@@ -10,6 +10,13 @@ export const client = new ApolloClient({
   shouldBatch: true,
 })
 
+export const mevClient = new ApolloClient({
+  link: new HttpLink({
+    uri: 'https://api.thegraph.com/subgraphs/id/QmcqWHjmnCf381CU2XE6ZRuisgRXrSX5hJNW1EZ5Lmtmzu'
+  }),
+  cache: new InMemoryCache()
+})
+
 export const healthClient = new ApolloClient({
   link: new HttpLink({
     uri: 'https://api.thegraph.com/index-node/graphql',
