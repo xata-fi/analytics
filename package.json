@@ -1,7 +1,7 @@
 {
   "name": "@uniswap/info",
   "private": true,
-  "homepage": "https://xata-fi.github.io/analytics",
+  "homepage": ".",
   "devDependencies": {
     "@popperjs/core": "^2.4.2",
     "@reach/portal": "^0.10.3",
