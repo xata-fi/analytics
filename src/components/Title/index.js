@@ -6,7 +6,7 @@ import { Flex } from 'rebass'
 import Link from '../Link'
 import { RowFixed } from '../Row'
 import Logo from '../../assets/xata-logo.png'
-import Wordmark from '../../assets/xata-brand.svg'
+import { ReactComponent as XataBrand } from '../../assets/xata-brand.svg'
 
 import { BasicLink } from '../Link'
 import { useMedia } from 'react-use'
