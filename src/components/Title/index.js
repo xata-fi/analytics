@@ -50,7 +50,11 @@ export default function Title() {
           <UniIcon id="link" onClick={() => history.push('/')}>
             <img width={'24px'} src={Logo} alt="logo" />
           </UniIcon>
-          {!below1080 && <XataBrand width={'undefined'} height={20} fill="#fff" style={{ marginLeft: '12px' }} />}
+          {!below1080 ? (
+            <XataBrand width={'undefined'} height={20} fill="#fff" style={{ marginLeft: '12px' }} />
+          ) : (
+            <XataBrand width={'undefined'} height={18} fill="#fff" style={{ marginLeft: '12px' }} />
+          )}
         </RowFixed>
         {below1080 && (
           <RowFixed style={{ alignItems: 'flex-end' }}>
