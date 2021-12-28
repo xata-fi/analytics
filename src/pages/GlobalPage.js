@@ -71,7 +71,7 @@ function GlobalPage() {
       <ThemedBackground backgroundColor={transparentize(0.6, '#f88f01')} />
       <ContentWrapper>
         <div>
-          <AutoColumn gap="24px" style={{ paddingBottom: below800 ? '0' : '24px' }}>
+          <AutoColumn gap="24px" style={{ paddingBottom: '24px' }}>
             <TYPE.largeHeader>{below800 ? 'XATA Analytics' : 'XATA Analytics'}</TYPE.largeHeader>
             <Search />
           </AutoColumn>
