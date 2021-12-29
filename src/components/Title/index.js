@@ -46,8 +46,8 @@ export default function Title() {
   return (
     <TitleWrapper>
       <Flex alignItems="center" style={{ justifyContent: 'space-between' }}>
-        <RowFixed>
-          <UniIcon id="link" onClick={() => history.push('/')}>
+        <RowFixed onClick={() => history.push('/')}>
+          <UniIcon id="link">
             <img width={'24px'} src={Logo} alt="logo" />
           </UniIcon>
           {!below1080 ? (
