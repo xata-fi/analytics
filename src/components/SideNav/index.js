@@ -147,17 +147,17 @@ function SideNav({ history }) {
           </AutoColumn>
           <AutoColumn gap="0.5rem" style={{ marginLeft: '.75rem', marginBottom: '4rem' }}>
             <Toggle isActive={isDark} toggle={toggleDarkMode} />
+            {!below1180 && (
+              <Polling>
+                <PollingDot />
+                <a href="/" style={{ color: 'white' }}>
+                  <TYPE.small color={'white'}>
+                    Updated {!!seconds ? seconds + 's' : '-'} ago <br />
+                  </TYPE.small>
+                </a>
+              </Polling>
+            )}
           </AutoColumn>
-          {!below1180 && (
-            <Polling style={{ marginLeft: '.5rem' }}>
-              <PollingDot />
-              <a href="/" style={{ color: 'white' }}>
-                <TYPE.small color={'white'}>
-                  Updated {!!seconds ? seconds + 's' : '-'} ago <br />
-                </TYPE.small>
-              </a>
-            </Polling>
-          )}
         </DesktopWrapper>
       ) : (
         <MobileWrapper>
