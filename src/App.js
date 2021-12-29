@@ -28,7 +28,6 @@ const AppWrapper = styled.div`
 const ContentWrapper = styled.div`
   display: grid;
   grid-template-columns: ${({ open }) => (open ? '220px 1fr 200px' : '220px 1fr 64px')};
-  min-height: 100vh;
   @media screen and (max-width: 1400px) {
     grid-template-columns: 220px 1fr;
   }
