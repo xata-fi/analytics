@@ -60,11 +60,10 @@ const MobileWrapper = styled.div`
 `
 
 const Polling = styled.div`
-  position: fixed;
+  position: relative;
   display: flex;
   left: 0;
   bottom: 0;
-  padding: 1rem;
   color: white;
   opacity: 0.4;
   transition: opacity 0.25s ease;
