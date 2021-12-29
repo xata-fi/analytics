@@ -44,13 +44,17 @@ export default function Title() {
   const below1080 = useMedia('(max-width: 1080px)')
 
   return (
-    <TitleWrapper onClick={() => history.push('/')}>
+    <TitleWrapper>
       <Flex alignItems="center" style={{ justifyContent: 'space-between' }}>
-        <RowFixed>
-          <UniIcon id="link" onClick={() => history.push('/')}>
+        <RowFixed onClick={() => history.push('/')}>
+          <UniIcon id="link">
             <img width={'24px'} src={Logo} alt="logo" />
           </UniIcon>
-          {!below1080 && <XataBrand width={'undefined'} height={20} fill="#fff" style={{ marginLeft: '12px' }} />}
+          {!below1080 ? (
+            <XataBrand width={'undefined'} height={20} fill="#fff" style={{ marginLeft: '12px' }} />
+          ) : (
+            <XataBrand width={'undefined'} height={18} fill="#fff" style={{ marginLeft: '12px' }} />
+          )}
         </RowFixed>
         {below1080 && (
           <RowFixed style={{ alignItems: 'flex-end' }}>
