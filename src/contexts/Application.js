@@ -1,8 +1,7 @@
 import React, { createContext, useContext, useReducer, useMemo, useCallback, useState, useEffect } from 'react'
-import { timeframeOptions, SUPPORTED_LIST_URLS__NO_ENS } from '../constants'
+import { timeframeOptions, TOKEN_WHITELIST } from '../constants'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import getTokenList from '../utils/tokenLists'
 import { healthClient } from '../apollo/client'
 import { SUBGRAPH_HEALTH } from '../apollo/queries'
 dayjs.extend(utc)
@@ -269,17 +268,7 @@ export function useListedTokens() {
 
   useEffect(() => {
     async function fetchList() {
-      //ata, busd
-      const xataWhitelist = ['0xa2120b9e674d3fc3875f415a7df52e382f141225', '0x5409acfaaa1e60da8ffb9fe2822a23e327616d76']
-      const allFetched = await SUPPORTED_LIST_URLS__NO_ENS.reduce(async (fetchedTokens, url) => {
-        const tokensSoFar = await fetchedTokens
-        const newTokens = await getTokenList(url)
-        return Promise.resolve([...tokensSoFar, ...newTokens.tokens])
-      }, Promise.resolve([]))
-      let formatted = allFetched?.map((t) => t.address.toLowerCase())
-      for (const token of xataWhitelist) {
-        formatted.push(token)
-      }
+      let formatted = TOKEN_WHITELIST
       updateSupportedTokens(formatted)
     }
     if (!supportedTokens) {
