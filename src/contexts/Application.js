@@ -269,12 +269,16 @@ export function useListedTokens() {
 
   useEffect(() => {
     async function fetchList() {
+      const xataWhitelist = ['0xa2120b9e674d3fc3875f415a7df52e382f141225']
       const allFetched = await SUPPORTED_LIST_URLS__NO_ENS.reduce(async (fetchedTokens, url) => {
         const tokensSoFar = await fetchedTokens
         const newTokens = await getTokenList(url)
         return Promise.resolve([...tokensSoFar, ...newTokens.tokens])
       }, Promise.resolve([]))
       let formatted = allFetched?.map((t) => t.address.toLowerCase())
+      for (const token of xataWhitelist) {
+        formatted.push(token)
+      }
       updateSupportedTokens(formatted)
     }
     if (!supportedTokens) {
