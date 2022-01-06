@@ -6,7 +6,7 @@ import { Flex } from 'rebass'
 import Link from '../Link'
 import { RowFixed } from '../Row'
 import Logo from '../../assets/xata-logo.png'
-import Wordmark from '../../assets/xata-brand.svg'
+import { ReactComponent as XataBrand } from '../../assets/xata-brand.svg'
 
 import { BasicLink } from '../Link'
 import { useMedia } from 'react-use'
@@ -44,14 +44,16 @@ export default function Title() {
   const below1080 = useMedia('(max-width: 1080px)')
 
   return (
-    <TitleWrapper onClick={() => history.push('/')}>
+    <TitleWrapper>
       <Flex alignItems="center" style={{ justifyContent: 'space-between' }}>
-        <RowFixed>
-          <UniIcon id="link" onClick={() => history.push('/')}>
+        <RowFixed onClick={() => history.push('/')}>
+          <UniIcon id="link">
             <img width={'24px'} src={Logo} alt="logo" />
           </UniIcon>
-          {!below1080 && (
-            <img width={'70px'} style={{ marginLeft: '8px', marginTop: '0px' }} src={Wordmark} alt="logo" />
+          {!below1080 ? (
+            <XataBrand width={'undefined'} height={20} fill="#fff" style={{ marginLeft: '12px' }} />
+          ) : (
+            <XataBrand width={'undefined'} height={18} fill="#fff" style={{ marginLeft: '12px' }} />
           )}
         </RowFixed>
         {below1080 && (

@@ -71,11 +71,11 @@ function GlobalPage() {
       <ThemedBackground backgroundColor={transparentize(0.6, '#f88f01')} />
       <ContentWrapper>
         <div>
-          <AutoColumn gap="24px" style={{ paddingBottom: below800 ? '0' : '24px' }}>
+          <AutoColumn gap="24px" style={{ paddingBottom: '24px' }}>
             <TYPE.largeHeader>{below800 ? 'XATA Analytics' : 'XATA Analytics'}</TYPE.largeHeader>
             <Search />
           </AutoColumn>
-          {below800 && ( // mobile card
+          {below800 && ( // additional mobile card that shows on top of charts
             <Box mb={20}>
               <Panel>
                 <Box>
@@ -112,14 +112,22 @@ function GlobalPage() {
             </Box>
           )}
           {!below800 && (
-            <GridRow>
-              <Panel style={{ height: '100%', minHeight: '300px' }}>
-                <GlobalChart display="liquidity" />
-              </Panel>
-              <Panel style={{ height: '100%' }}>
-                <GlobalChart display="volume" />
-              </Panel>
-            </GridRow>
+            <>
+              <AutoColumn gap="6px">
+                <Panel style={{ height: '100%', minHeight: '300px' }}>
+                  <GlobalChart display="MEV" />
+                </Panel>
+                <GridRow>
+                  <Panel style={{ height: '100%', minHeight: '300px' }}>
+                    <GlobalChart display="liquidity" />
+                  </Panel>
+                  <Panel style={{ height: '100%' }}>
+                    <GlobalChart display="volume" />
+                  </Panel>
+                </GridRow>
+              </AutoColumn>
+            </>
+
           )}
           {below800 && (
             <AutoColumn style={{ marginTop: '6px' }} gap="24px">

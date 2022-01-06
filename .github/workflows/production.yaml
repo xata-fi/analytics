@@ -2,11 +2,11 @@ name: Production Build and Deploy
 
 on:
   push:
-    branches: [main]
+    branches: [main, 'release/**']
 
 jobs:
   build:
-    name: Build xata-fi/analytics-production
+    name: Build xata-fi/analytics production
     runs-on: ubuntu-latest
 
     steps:
@@ -35,5 +35,5 @@ jobs:
         with:
           branch: gh-pages
           folder: build
-          repository-name: xata-fi/analytics-production
-          ssh-key: ${{ secrets.PRODUCTION_DEPLOY_KEY }}
+          repository-name: xata-fi/analytics
+          ssh-key: ${{ secrets.STAGING_DEPLOY_KEY }}

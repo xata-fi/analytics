@@ -12,6 +12,7 @@ const IconWrapper = styled.div<{ isActive?: boolean }>`
 
 const StyledToggle = styled.div`
   display: flex;
+  position: relative;
   width: fit-content;
   cursor: pointer;
   text-decoration: none;

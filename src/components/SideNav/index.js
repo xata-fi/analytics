@@ -60,11 +60,10 @@ const MobileWrapper = styled.div`
 `
 
 const Polling = styled.div`
-  position: fixed;
+  position: relative;
   display: flex;
   left: 0;
   bottom: 0;
-  padding: 1rem;
   color: white;
   opacity: 0.4;
   transition: opacity 0.25s ease;
@@ -148,17 +147,17 @@ function SideNav({ history }) {
           </AutoColumn>
           <AutoColumn gap="0.5rem" style={{ marginLeft: '.75rem', marginBottom: '4rem' }}>
             <Toggle isActive={isDark} toggle={toggleDarkMode} />
+            {!below1180 && (
+              <Polling>
+                <PollingDot />
+                <a href="/" style={{ color: 'white' }}>
+                  <TYPE.small color={'white'}>
+                    Updated {!!seconds ? seconds + 's' : '-'} ago <br />
+                  </TYPE.small>
+                </a>
+              </Polling>
+            )}
           </AutoColumn>
-          {!below1180 && (
-            <Polling style={{ marginLeft: '.5rem' }}>
-              <PollingDot />
-              <a href="/" style={{ color: 'white' }}>
-                <TYPE.small color={'white'}>
-                  Updated {!!seconds ? seconds + 's' : '-'} ago <br />
-                </TYPE.small>
-              </a>
-            </Polling>
-          )}
         </DesktopWrapper>
       ) : (
         <MobileWrapper>
