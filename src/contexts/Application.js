@@ -12,6 +12,7 @@ const UPDATE_SESSION_START = 'UPDATE_SESSION_START'
 const UPDATED_SUPPORTED_TOKENS = 'UPDATED_SUPPORTED_TOKENS'
 const UPDATE_LATEST_BLOCK = 'UPDATE_LATEST_BLOCK'
 const UPDATE_HEAD_BLOCK = 'UPDATE_HEAD_BLOCK'
+const UPDATE_NETWORK = 'UPDATE_NETWORK'
 
 const SUPPORTED_TOKENS = 'SUPPORTED_TOKENS'
 const TIME_KEY = 'TIME_KEY'
@@ -19,6 +20,7 @@ const CURRENCY = 'CURRENCY'
 const SESSION_START = 'SESSION_START'
 const LATEST_BLOCK = 'LATEST_BLOCK'
 const HEAD_BLOCK = 'HEAD_BLOCK'
+const NETWORK = 'NETWORK'
 
 const ApplicationContext = createContext()
 
@@ -66,6 +68,14 @@ function reducer(state, { type, payload }) {
       }
     }
 
+    case UPDATE_NETWORK: {
+      const { network } = payload
+      return {
+        ...state,
+        [NETWORK]: network,
+      }
+    }
+
     case UPDATED_SUPPORTED_TOKENS: {
       const { supportedTokens } = payload
       return {
@@ -83,6 +93,7 @@ function reducer(state, { type, payload }) {
 const INITIAL_STATE = {
   CURRENCY: 'USD',
   TIME_KEY: timeframeOptions.ALL_TIME,
+  NETWORK: 'Binance Smart Chain',
 }
 
 export default function Provider({ children }) {
@@ -143,6 +154,15 @@ export default function Provider({ children }) {
     })
   }, [])
 
+  const updateNetwork = useCallback((network) => {
+    dispatch({
+      type: UPDATE_NETWORK,
+      payload: {
+        network,
+      },
+    })
+  }, [])
+
   return (
     <ApplicationContext.Provider
       value={useMemo(
@@ -155,9 +175,19 @@ export default function Provider({ children }) {
             updateSupportedTokens,
             updateLatestBlock,
             updateHeadBlock,
+            updateNetwork,
           },
         ],
-        [state, update, updateTimeframe, updateSessionStart, updateSupportedTokens, updateLatestBlock, updateHeadBlock]
+        [
+          state,
+          update,
+          updateTimeframe,
+          updateSessionStart,
+          updateSupportedTokens,
+          updateLatestBlock,
+          updateHeadBlock,
+          updateNetwork,
+        ]
       )}
     >
       {children}
@@ -277,4 +307,10 @@ export function useListedTokens() {
   }, [updateSupportedTokens, supportedTokens])
 
   return supportedTokens
+}
+
+export function useNetwork() {
+  const [state, { updateNetwork }] = useApplicationContext()
+  const network = state?.['NETWORK']
+  return [network, updateNetwork]
 }
