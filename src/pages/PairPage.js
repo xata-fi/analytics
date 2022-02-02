@@ -35,7 +35,7 @@ import { usePathDismissed, useSavedPairs } from '../contexts/LocalStorage'
 
 import { Bookmark, PlusCircle, AlertCircle } from 'react-feather'
 import FormattedName from '../components/FormattedName'
-import { useListedTokens } from '../contexts/Application'
+import { useListedTokens, useNetwork } from '../contexts/Application'
 import HoverText from '../components/HoverText'
 import { UNTRACKED_COPY, PAIR_BLACKLIST, BLOCKED_WARNINGS } from '../constants'
 import { chainConfig } from '../chainConfig'
@@ -141,6 +141,8 @@ function PairPage({ pairAddress, history }) {
     document.querySelector('body').scrollTo(0, 0)
   }, [])
 
+  const [network] = useNetwork()
+
   const transactions = usePairTransactions(pairAddress)
   const backgroundColor = useColor(pairAddress)
 
@@ -196,7 +198,7 @@ function PairPage({ pairAddress, history }) {
 
   const listedTokens = useListedTokens()
 
-  const { scannerUrl, scannerName } = chainConfig[process.env.REACT_APP_CHAIN]
+  const { scannerUrl, scannerName } = chainConfig[network]
 
   if (PAIR_BLACKLIST.includes(pairAddress)) {
     return (

@@ -1,5 +1,5 @@
 import { USER_MINTS_BUNRS_PER_PAIR } from '../apollo/queries'
-import { client } from '../apollo/client'
+import { getClient } from '../apollo/client'
 import dayjs from 'dayjs'
 import { getShareValueOverTime } from '.'
 
@@ -49,10 +49,12 @@ function formatPricesForEarlyTimestamps(position): Position {
   return position
 }
 
-async function getPrincipalForUserPerPair(user: string, pairAddress: string) {
+async function getPrincipalForUserPerPair(network: string, user: string, pairAddress: string) {
   let usd = 0
   let amount0 = 0
   let amount1 = 0
+
+  const { client } = getClient(network)
   // get all minst and burns to get principal amounts
   const results = await client.query({
     query: USER_MINTS_BUNRS_PER_PAIR,
@@ -163,7 +165,13 @@ export function getMetricsForPositionWindow(positionT0: Position, positionT1: Po
  * @param pairSnapshots // history of entries and exits for lp on this pair
  * @param currentETHPrice // current price of eth used for usd conversions
  */
-export async function getHistoricalPairReturns(startDateTimestamp, currentPairData, pairSnapshots, currentETHPrice) {
+export async function getHistoricalPairReturns(
+  network,
+  startDateTimestamp,
+  currentPairData,
+  pairSnapshots,
+  currentETHPrice
+) {
   // catch case where data not puplated yet
   if (!currentPairData.createdAtTimestamp) {
     return []
@@ -186,7 +194,7 @@ export async function getHistoricalPairReturns(startDateTimestamp, currentPairDa
     dayIndex = dayIndex + 1
   }
 
-  const shareValues = await getShareValueOverTime(currentPairData.id, dayTimestamps)
+  const shareValues = await getShareValueOverTime(network, currentPairData.id, dayTimestamps)
   const shareValuesFormatted = {}
   shareValues.map((share) => {
     return (shareValuesFormatted[share.timestamp] = share)
@@ -255,9 +263,9 @@ export async function getHistoricalPairReturns(startDateTimestamp, currentPairDa
  * @param pair
  * @param ethPrice
  */
-export async function getLPReturnsOnPair(user: string, pair, ethPrice: number, snapshots) {
+export async function getLPReturnsOnPair(network: string, user: string, pair, ethPrice: number, snapshots) {
   // initialize values
-  const principal = await getPrincipalForUserPerPair(user, pair.id)
+  const principal = await getPrincipalForUserPerPair(network, user, pair.id)
   let hodlReturn = 0
   let netReturn = 0
   let xataReturn = 0

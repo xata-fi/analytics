@@ -29,7 +29,7 @@ import { usePathDismissed, useSavedTokens } from '../contexts/LocalStorage'
 import { Hover, PageWrapper, ContentWrapper, StyledIcon, BlockedWrapper, BlockedMessageWrapper } from '../components'
 import { PlusCircle, Bookmark, AlertCircle } from 'react-feather'
 import FormattedName from '../components/FormattedName'
-import { useListedTokens } from '../contexts/Application'
+import { useListedTokens, useNetwork } from '../contexts/Application'
 import HoverText from '../components/HoverText'
 import { UNTRACKED_COPY, TOKEN_BLACKLIST, BLOCKED_WARNINGS } from '../constants'
 import QuestionHelper from '../components/QuestionHelper'
@@ -122,6 +122,8 @@ function TokenPage({ address, history }) {
     document.querySelector('body').scrollTo(0, 0)
   }, [])
 
+  const [network] = useNetwork()
+
   // detect color from token
   const backgroundColor = useColor(id, symbol)
 
@@ -172,7 +174,7 @@ function TokenPage({ address, history }) {
 
   const [useTracked, setUseTracked] = useState(true)
 
-  const { scannerUrl, scannerName } = chainConfig[process.env.REACT_APP_CHAIN]
+  const { scannerUrl, scannerName } = chainConfig[network]
 
   if (TOKEN_BLACKLIST.includes(address)) {
     return (

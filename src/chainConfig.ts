@@ -29,7 +29,7 @@ export const chainConfig: Blockchain = {
     blockchainName: 'Polygon',
     scannerName: 'PolygonScan',
     scannerUrl: 'polygonscan.com',
-    trustwalletChain: 'smartchain',
+    trustwalletChain: 'polygon',
     tokenStandard: 'ERC20',
     conveyorSubgraph: 'https://api.thegraph.com/subgraphs/name/r2d2-rmbl/xata-polygon',
     mevSubgraph: 'https://api.thegraph.com/subgraphs/name/r2d2-rmbl/xata-polygon-conveyor',

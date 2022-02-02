@@ -19,6 +19,7 @@ import { FEE_WARNING_TOKENS } from '../constants'
 import { BasicLink } from '../components/Link'
 import { useMedia } from 'react-use'
 import Search from '../components/Search'
+import { useNetwork } from '../contexts/Application'
 import { useSavedAccounts } from '../contexts/LocalStorage'
 import { chainConfig } from '../chainConfig'
 
@@ -89,6 +90,7 @@ const Warning = styled.div`
 `
 
 function AccountPage({ account }) {
+  const [network] = useNetwork()
   // get data for this account
   const transactions = useUserTransactions(account)
   const positions = useUserPositions(account)
@@ -159,7 +161,7 @@ function AccountPage({ account }) {
     ;(isBookmarked ? removeAccount : addAccount)(account)
   }, [account, isBookmarked, addAccount, removeAccount])
 
-  const { scannerUrl, scannerName } = chainConfig[process.env.REACT_APP_CHAIN]
+  const { scannerUrl, scannerName } = chainConfig[network]
 
   return (
     <PageWrapper>

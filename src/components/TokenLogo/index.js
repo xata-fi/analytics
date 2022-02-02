@@ -3,8 +3,8 @@ import styled from 'styled-components'
 import { isAddress } from '../../utils/index.js'
 import EthereumLogo from '../../assets/eth.png'
 import { chainConfig } from '../../chainConfig'
-
-const BAD_IMAGES = {}
+import { useNetwork } from '../../contexts/Application.js'
+import { ADDRESS_TO_LOGO } from '../../constants/index.js'
 
 const Inline = styled.div`
   display: flex;
@@ -31,21 +31,32 @@ const StyledEthereumLogo = styled.div`
   }
 `
 
+function importAllImages(requireContext) {
+  let images = {}
+  requireContext.keys().forEach((item, index) => {
+    images[item.replace('./', '')] = requireContext(item)
+  })
+  return images
+}
+
 export default function TokenLogo({ address, header = false, size = '24px', ...rest }) {
+  const [network] = useNetwork()
   const [error, setError] = useState(false)
 
+  const images = importAllImages(require.context('../../assets/coinLogos', false, /\.(png|jpe?g|svg)$/))
   useEffect(() => {
     setError(false)
   }, [address])
-
-  if (error || BAD_IMAGES[address]) {
-    return (
-      <Inline>
-        <span {...rest} alt={''} style={{ fontSize: size }} role="img" aria-label="face">
-          🤔
-        </span>
-      </Inline>
-    )
+  if (error) {
+    //try to patch with our own logos
+    if (Object.keys(ADDRESS_TO_LOGO).includes(address)) {
+      return (
+        <Inline>
+          <Image {...rest} alt={''} src={images[`${ADDRESS_TO_LOGO[address]}`]} size={size} />
+        </Inline>
+      )
+    }
+    return <Inline></Inline>
   }
 
   // hard coded fixes for trust wallet api issues
@@ -71,11 +82,10 @@ export default function TokenLogo({ address, header = false, size = '24px', ...r
       </StyledEthereumLogo>
     )
   }
-  const { trustwalletChain } = chainConfig[process.env.REACT_APP_CHAIN]
+  const { trustwalletChain } = chainConfig[network]
   const path = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/${trustwalletChain}/assets/${isAddress(
     address
   )}/logo.png`
-
   return (
     <Inline>
       <Image
@@ -84,7 +94,6 @@ export default function TokenLogo({ address, header = false, size = '24px', ...r
         src={path}
         size={size}
         onError={(event) => {
-          BAD_IMAGES[address] = true
           setError(true)
           event.preventDefault()
         }}

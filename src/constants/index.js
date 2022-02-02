@@ -13,6 +13,7 @@ export const timeframeOptions = {
 
 // whitelist token list to disable warnings
 export const TOKEN_WHITELIST = [
+  //BSC Tokens
   '0x5409acfaaa1e60da8ffb9fe2822a23e327616d76', //BUSD
   '0x55d398326f99059ff775485246999027b3197955', // USDT
   '0x2170ed0880ac9a755fd29b2688956bd959f933f8', // ETH
@@ -31,9 +32,13 @@ export const TOKEN_WHITELIST = [
   '0x8fF795a6F4D97E7887C79beA79aba5cc76444aDf', //BCH
   '0x0d8ce2a99bb6e3b7db580ed848240e4a0f9ae153', // FIL
   '0xbf5140a22578168fd562dccf235e5d43a02ce9b1', // UNI
-  '0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82', // CAKE
+  '0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce8ß2', // CAKE
   '0x947950BcC74888a40Ffa2593C5798F11Fc9124C4', // SUSHI
   '0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c', // BTCB
+  //Polygon Tokens
+  '0xc2132d05d31c914a87c6611c10748aeb04b58e8f', //USDT
+  '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063', //DAI
+  '0x2791bca1f2de4661ed88a30c99a7a9449aa84174', //USDC
 ]
 
 // hide from overview list
@@ -83,3 +88,7 @@ export const TRACKED_OVERRIDES = [
   '0x45804880de22913dafe09f4980848ece6ecbaf78',
   '0x709f7b10f22eb62b05913b59b92ddd372d4e2152',
 ]
+
+export const ADDRESS_TO_LOGO = {
+  '0x0df0f72ee0e5c9b7ca761ecec42754992b2da5bf': 'ata.png',
+}
