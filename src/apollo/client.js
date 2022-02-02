@@ -1,41 +1,46 @@
 import { ApolloClient } from 'apollo-client'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { HttpLink } from 'apollo-link-http'
+import { chainConfig } from '../chainConfig'
 
-export const client = new ApolloClient({
-  link: new HttpLink({
-    uri: 'https://api.thegraph.com/subgraphs/name/r2d2-rmbl/xata-bsc',
-  }),
-  cache: new InMemoryCache(),
-  shouldBatch: true,
-})
+export const getClient = (network) => {
+  const client = new ApolloClient({
+    link: new HttpLink({
+      uri: chainConfig[network]?.conveyorSubgraph,
+    }),
+    cache: new InMemoryCache(),
+    shouldBatch: true,
+  })
 
-export const mevClient = new ApolloClient({
-  link: new HttpLink({
-    uri: 'https://api.thegraph.com/subgraphs/id/QmcqWHjmnCf381CU2XE6ZRuisgRXrSX5hJNW1EZ5Lmtmzu'
-  }),
-  cache: new InMemoryCache()
-})
+  const mevClient = new ApolloClient({
+    link: new HttpLink({
+      uri: chainConfig[network]?.mevSubgraph,
+    }),
+    cache: new InMemoryCache(),
+  })
 
-export const healthClient = new ApolloClient({
-  link: new HttpLink({
-    uri: 'https://api.thegraph.com/index-node/graphql',
-  }),
-  cache: new InMemoryCache(),
-  shouldBatch: true,
-})
+  const healthClient = new ApolloClient({
+    link: new HttpLink({
+      uri: 'https://api.thegraph.com/index-node/graphql',
+    }),
+    cache: new InMemoryCache(),
+    shouldBatch: true,
+  })
 
-export const stakingClient = new ApolloClient({
-  link: new HttpLink({
-    uri: 'https://api.thegraph.com/subgraphs/name/way2rach/talisman',
-  }),
-  cache: new InMemoryCache(),
-  shouldBatch: true,
-})
+  const stakingClient = new ApolloClient({
+    link: new HttpLink({
+      uri: 'https://api.thegraph.com/subgraphs/name/way2rach/talisman',
+    }),
+    cache: new InMemoryCache(),
+    shouldBatch: true,
+  })
 
-export const blockClient = new ApolloClient({
-  link: new HttpLink({
-    uri: 'https://api.thegraph.com/subgraphs/name/astroswap/bsc-blocks',
-  }),
-  cache: new InMemoryCache(),
-})
+  const blockClient = new ApolloClient({
+    link: new HttpLink({
+      uri: chainConfig[network]?.blocksSubgraph,
+    }),
+    cache: new InMemoryCache(),
+  })
+
+  return { client, mevClient, healthClient, stakingClient, blockClient }
+}

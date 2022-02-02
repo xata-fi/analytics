@@ -2,7 +2,7 @@ import React, { createContext, useContext, useReducer, useMemo, useCallback, use
 import { timeframeOptions, TOKEN_WHITELIST } from '../constants'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import { healthClient } from '../apollo/client'
+import { getClient } from '../apollo/client'
 import { SUBGRAPH_HEALTH } from '../apollo/queries'
 dayjs.extend(utc)
 
@@ -93,7 +93,7 @@ function reducer(state, { type, payload }) {
 const INITIAL_STATE = {
   CURRENCY: 'USD',
   TIME_KEY: timeframeOptions.ALL_TIME,
-  NETWORK: 'Binance Smart Chain',
+  NETWORK: 'BINANCE_SMART_CHAIN',
 }
 
 export default function Provider({ children }) {
@@ -196,12 +196,14 @@ export default function Provider({ children }) {
 }
 
 export function useLatestBlocks() {
+  const [network] = useNetwork()
   const [state, { updateLatestBlock, updateHeadBlock }] = useApplicationContext()
 
   const latestBlock = state?.[LATEST_BLOCK]
   const headBlock = state?.[HEAD_BLOCK]
 
   useEffect(() => {
+    const { healthClient } = getClient(network)
     async function fetch() {
       healthClient
         .query({
@@ -222,7 +224,7 @@ export function useLatestBlocks() {
     if (!latestBlock) {
       fetch()
     }
-  }, [latestBlock, updateHeadBlock, updateLatestBlock])
+  }, [network, latestBlock, updateHeadBlock, updateLatestBlock])
 
   return [latestBlock, headBlock]
 }

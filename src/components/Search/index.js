@@ -11,10 +11,11 @@ import { useAllPairData, usePairData } from '../../contexts/PairData'
 import DoubleTokenLogo from '../DoubleLogo'
 import { useMedia } from 'react-use'
 import { useAllPairsInXata, useAllTokensInXata } from '../../contexts/GlobalData'
+import { useNetwork } from '../../contexts/Application'
 import { TOKEN_BLACKLIST, PAIR_BLACKLIST } from '../../constants'
 
 import { transparentize } from 'polished'
-import { client } from '../../apollo/client'
+import { getClient } from '../../apollo/client'
 import { PAIR_SEARCH, TOKEN_SEARCH } from '../../apollo/queries'
 import FormattedName from '../FormattedName'
 import { TYPE } from '../../Theme'
@@ -179,9 +180,10 @@ export const Search = ({ small = false }) => {
 
   const [searchedTokens, setSearchedTokens] = useState([])
   const [searchedPairs, setSearchedPairs] = useState([])
-
+  const [network] = useNetwork()
   useEffect(() => {
     async function fetchData() {
+      const { client } = getClient(network)
       try {
         if (value?.length > 0) {
           let tokens = await client.query({
@@ -213,7 +215,7 @@ export const Search = ({ small = false }) => {
       }
     }
     fetchData()
-  }, [value])
+  }, [value, network])
 
   function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // $& means the whole matched string

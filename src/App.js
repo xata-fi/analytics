@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { ApolloProvider } from 'react-apollo'
-import { client } from './apollo/client'
+import { getClient } from './apollo/client'
 import { Route, Switch, HashRouter, Redirect } from 'react-router-dom'
 import GlobalPage from './pages/GlobalPage'
 import TokenPage from './pages/TokenPage'
@@ -16,7 +16,7 @@ import PinnedData from './components/PinnedData'
 import SideNav from './components/SideNav'
 import AccountLookup from './pages/AccountLookup'
 import LocalLoader from './components/LocalLoader'
-import { useLatestBlocks } from './contexts/Application'
+import { useLatestBlocks, useNetwork } from './contexts/Application'
 import GoogleAnalyticsReporter from './components/analytics/GoogleAnalyticsReporter'
 import { PAIR_BLACKLIST, TOKEN_BLACKLIST } from './constants'
 import { chainConfig } from './chainConfig'
@@ -96,16 +96,19 @@ const LayoutWrapper = ({ children, savedOpen, setSavedOpen }) => {
 const BLOCK_DIFFERENCE_THRESHOLD = 30
 
 function App() {
+  const [network] = useNetwork()
   const [savedOpen, setSavedOpen] = useState(false)
 
   const globalData = useGlobalData()
-  const globalChartData = useGlobalChartData()
+  const [dailyData, weeklyData] = useGlobalChartData()
+  const globalChartData = [dailyData, weeklyData]
   const [latestBlock, headBlock] = useLatestBlocks()
 
   // show warning
   const showWarning = headBlock && latestBlock ? headBlock - latestBlock > BLOCK_DIFFERENCE_THRESHOLD : false
 
-  const { blockchainName } = chainConfig[process.env.REACT_APP_CHAIN]
+  const { client } = getClient(network)
+  const { blockchainName } = chainConfig[network]
 
   return (
     <ApolloProvider client={client}>

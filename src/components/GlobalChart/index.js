@@ -13,7 +13,7 @@ import { TYPE } from '../../Theme'
 const CHART_VIEW = {
   VOLUME: 'Volume',
   LIQUIDITY: 'Liquidity',
-  MEV: 'MEV'
+  MEV: 'MEV',
 }
 
 const VOLUME_WINDOW = {
@@ -22,20 +22,19 @@ const VOLUME_WINDOW = {
 }
 const GlobalChart = ({ display }) => {
   // chart options
-  const [chartView, setChartView] = useState(display === 'volume' ? 
-    CHART_VIEW.VOLUME : display === 'liquidity' ?
-    CHART_VIEW.LIQUIDITY : CHART_VIEW.MEV)
+  const [chartView, setChartView] = useState(
+    display === 'volume' ? CHART_VIEW.VOLUME : display === 'liquidity' ? CHART_VIEW.LIQUIDITY : CHART_VIEW.MEV
+  )
 
   // time window and window size for chart
   const timeWindow = timeframeOptions.ALL_TIME
   const [volumeWindow, setVolumeWindow] = useState(VOLUME_WINDOW.DAYS)
-  
+
   // global historical data
   const [dailyData, weeklyData] = useGlobalChartData()
-  const dailyMEVData = useMEVChartData()
-  
-  const latestTotalMEV = dailyMEVData?.[dailyMEVData.length-1].totalUnusedSlippageUSD
-  const previousTotalMEV = dailyMEVData?.[dailyMEVData.length-2].totalUnusedSlippageUSD
+  const [dailyMEVData] = useMEVChartData()
+  const latestTotalMEV = dailyMEVData?.[dailyMEVData.length - 1].totalUnusedSlippageUSD
+  const previousTotalMEV = dailyMEVData?.[dailyMEVData.length - 2].totalUnusedSlippageUSD
   const latestMEVChange = getPercentChange(latestTotalMEV, previousTotalMEV)
   const { totalLiquidityUSD, oneDayVolumeUSD, volumeChangeUSD, liquidityChangeUSD, oneWeekVolume, weeklyVolumeChange } =
     useGlobalData()
