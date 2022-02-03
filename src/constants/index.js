@@ -41,6 +41,7 @@ export const TOKEN_WHITELIST = [
   '0x2791bca1f2de4661ed88a30c99a7a9449aa84174', //USDC
   '0x0df0f72ee0e5c9b7ca761ecec42754992b2da5bf', //ATA
   '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270', //WMATIC
+  '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619', //WETH
 ]
 
 // hide from overview list
