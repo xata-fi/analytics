@@ -16,10 +16,9 @@ import PinnedData from './components/PinnedData'
 import SideNav from './components/SideNav'
 import AccountLookup from './pages/AccountLookup'
 import LocalLoader from './components/LocalLoader'
-import { useLatestBlocks, useNetwork } from './contexts/Application'
+import { useNetwork } from './contexts/Application'
 import GoogleAnalyticsReporter from './components/analytics/GoogleAnalyticsReporter'
 import { PAIR_BLACKLIST, TOKEN_BLACKLIST } from './constants'
-import { chainConfig } from './chainConfig'
 
 const AppWrapper = styled.div`
   position: relative;
@@ -60,22 +59,6 @@ const Center = styled.div`
   transition: width 0.25s ease;
   background-color: ${({ theme }) => theme.onlyLight};
 `
-
-const WarningWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: center;
-`
-
-const WarningBanner = styled.div`
-  background-color: #ff6871;
-  padding: 1.5rem;
-  color: white;
-  width: 100%;
-  text-align: center;
-  font-weight: 500;
-`
-
 /**
  * Wrap the component with the header and sidebar pinned tab
  */
@@ -93,8 +76,6 @@ const LayoutWrapper = ({ children, savedOpen, setSavedOpen }) => {
   )
 }
 
-const BLOCK_DIFFERENCE_THRESHOLD = 30
-
 function App() {
   const [network] = useNetwork()
   const [savedOpen, setSavedOpen] = useState(false)
@@ -102,24 +83,12 @@ function App() {
   const globalData = useGlobalData()
   const [dailyData, weeklyData] = useGlobalChartData()
   const globalChartData = [dailyData, weeklyData]
-  const [latestBlock, headBlock] = useLatestBlocks()
-
-  // show warning
-  const showWarning = headBlock && latestBlock ? headBlock - latestBlock > BLOCK_DIFFERENCE_THRESHOLD : false
 
   const { client } = getClient(network)
-  const { blockchainName } = chainConfig[network]
 
   return (
     <ApolloProvider client={client}>
       <AppWrapper>
-        {showWarning && (
-          <WarningWrapper>
-            <WarningBanner>
-              {`Warning: The data on this site has only synced to ${blockchainName} block ${latestBlock} (out of ${headBlock}). Please check back soon.`}
-            </WarningBanner>
-          </WarningWrapper>
-        )}
         {globalData &&
         Object.keys(globalData).length > 0 &&
         globalChartData &&
