@@ -39,6 +39,8 @@ export const TOKEN_WHITELIST = [
   '0xc2132d05d31c914a87c6611c10748aeb04b58e8f', //USDT
   '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063', //DAI
   '0x2791bca1f2de4661ed88a30c99a7a9449aa84174', //USDC
+  '0x0df0f72ee0e5c9b7ca761ecec42754992b2da5bf', //ATA
+  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270', //WMATIC
 ]
 
 // hide from overview list
