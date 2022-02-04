@@ -102,10 +102,13 @@ function App() {
   const globalData = useGlobalData()
   const [dailyData, weeklyData] = useGlobalChartData()
   const globalChartData = [dailyData, weeklyData]
-  const [latestBlock, headBlock] = useLatestBlocks()
+  const [latestBlock, headBlock, latestMEVBlock, headMEVBlock] = useLatestBlocks()
 
   // show warning
-  const showWarning = headBlock && latestBlock ? headBlock - latestBlock > BLOCK_DIFFERENCE_THRESHOLD : false
+  const isNonMEVChartSynced = headBlock && latestBlock ? headBlock - latestBlock < BLOCK_DIFFERENCE_THRESHOLD : false
+  const isMEVChartSynced =
+    headMEVBlock && latestMEVBlock ? headMEVBlock - latestMEVBlock < BLOCK_DIFFERENCE_THRESHOLD : false
+  const showWarning = !isNonMEVChartSynced || !isMEVChartSynced
 
   const { client } = getClient(network)
   const { blockchainName } = chainConfig[network]
@@ -116,7 +119,12 @@ function App() {
         {showWarning && (
           <WarningWrapper>
             <WarningBanner>
-              {`Warning: The data on this site has only synced to ${blockchainName} block ${latestBlock} (out of ${headBlock}). Please check back soon.`}
+              {`Warning: `}
+              {!isMEVChartSynced &&
+                `Data for MEV chart has only synced to ${blockchainName} block ${latestMEVBlock} (out of ${headMEVBlock}).`}
+              <br />
+              {!isNonMEVChartSynced &&
+                `Data for Volume and Liquidity chart has only synced to ${blockchainName} block ${latestBlock} (out of ${headBlock}).`}
             </WarningBanner>
           </WarningWrapper>
         )}

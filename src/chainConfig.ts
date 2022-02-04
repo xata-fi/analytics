@@ -22,7 +22,7 @@ export const chainConfig: Blockchain = {
     trustwalletChain: 'smartchain',
     tokenStandard: 'BEP20',
     conveyorSubgraph: 'https://api.thegraph.com/subgraphs/name/r2d2-rmbl/xata-bsc',
-    mevSubgraph: 'https://api.thegraph.com/subgraphs/id/QmcqWHjmnCf381CU2XE6ZRuisgRXrSX5hJNW1EZ5Lmtmzu',
+    mevSubgraph: 'https://api.thegraph.com/subgraphs/name/r2d2-rmbl/xata-bsc-conveyor',
     blocksSubgraph: 'https://api.thegraph.com/subgraphs/name/astroswap/bsc-blocks',
   },
   POLYGON: {

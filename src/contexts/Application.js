@@ -203,13 +203,15 @@ export function useLatestBlocks() {
   const prevNetwork = usePrevious(network)
   const latestBlock = state?.[LATEST_BLOCK]
   const headBlock = state?.[HEAD_BLOCK]
+  const [headMEVBlock, setHeadMEVBlock] = useState()
+  const [latestMEVBlock, setLatestMEVBlock] = useState()
 
   useEffect(() => {
     const { healthClient } = getClient(network)
     async function fetch() {
       healthClient
         .query({
-          query: getHealthQuery(network),
+          query: getHealthQuery(network, false),
         })
         .then((res) => {
           const syncedBlock = res.data.indexingStatusForCurrentVersion.chains[0].latestBlock.number
@@ -228,7 +230,31 @@ export function useLatestBlocks() {
     }
   }, [network, prevNetwork, latestBlock, updateHeadBlock, updateLatestBlock])
 
-  return [latestBlock, headBlock]
+  useEffect(() => {
+    const { healthClient } = getClient(network)
+    async function fetchMEVLatest() {
+      healthClient
+        .query({
+          query: getHealthQuery(network, true),
+        })
+        .then((res) => {
+          const syncedBlock = res.data.indexingStatusForCurrentVersion.chains[0].latestBlock.number
+          const headBlock = res.data.indexingStatusForCurrentVersion.chains[0].chainHeadBlock.number
+          if (syncedBlock && headBlock) {
+            setLatestMEVBlock(syncedBlock)
+            setHeadMEVBlock(headBlock)
+          }
+        })
+        .catch((e) => {
+          console.log(e)
+        })
+    }
+    if (!latestMEVBlock || prevNetwork !== network) {
+      fetchMEVLatest()
+    }
+  }, [network, prevNetwork, latestMEVBlock, headMEVBlock])
+
+  return [latestBlock, headBlock, latestMEVBlock, headMEVBlock]
 }
 
 export function useCurrentCurrency() {

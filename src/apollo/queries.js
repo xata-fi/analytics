@@ -1,17 +1,30 @@
 import gql from 'graphql-tag'
 import { FACTORY_ADDRESS, BUNDLE_ID } from '../constants'
 
-export const getHealthQuery = (network) => {
+export const getHealthQuery = (network, isMEV) => {
   let subgraphName = ''
-  switch (network) {
-    case 'BINANCE_SMART_CHAIN':
-      subgraphName = 'r2d2-rmbl/xata-bsc'
-      break
-    case 'POLYGON':
-      subgraphName = 'r2d2-rmbl/xata-polygon'
-      break
-    default:
-      break
+  if (isMEV) {
+    switch (network) {
+      case 'BINANCE_SMART_CHAIN':
+        subgraphName = 'r2d2-rmbl/xata-bsc-conveyor'
+        break
+      case 'POLYGON':
+        subgraphName = 'r2d2-rmbl/xata-polygon-conveyor'
+        break
+      default:
+        break
+    }
+  } else {
+    switch (network) {
+      case 'BINANCE_SMART_CHAIN':
+        subgraphName = 'r2d2-rmbl/xata-bsc'
+        break
+      case 'POLYGON':
+        subgraphName = 'r2d2-rmbl/xata-polygon'
+        break
+      default:
+        break
+    }
   }
   return gql`
     query health {
