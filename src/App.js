@@ -121,6 +121,7 @@ function App() {
             <WarningBanner>
               {`Warning: `}
               {!isMEVChartSynced &&
+                network === 'BINANCE_SMART_CHAIN' &&
                 `Data for MEV chart has only synced to ${blockchainName} block ${latestMEVBlock} (out of ${headMEVBlock}).`}
               <br />
               {!isNonMEVChartSynced &&
