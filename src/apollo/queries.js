@@ -1,22 +1,35 @@
 import gql from 'graphql-tag'
 import { FACTORY_ADDRESS, BUNDLE_ID } from '../constants'
 
-export const SUBGRAPH_HEALTH = gql`
-  query health {
-    indexingStatusForCurrentVersion(subgraphName: "r2d2-rmbl/xata-bsc") {
-      synced
-      health
-      chains {
-        chainHeadBlock {
-          number
-        }
-        latestBlock {
-          number
+export const getHealthQuery = (network) => {
+  let subgraphName = ''
+  switch (network) {
+    case 'BINANCE_SMART_CHAIN':
+      subgraphName = 'r2d2-rmbl/xata-bsc'
+      break
+    case 'POLYGON':
+      subgraphName = 'r2d2-rmbl/xata-polygon'
+      break
+    default:
+      break
+  }
+  return gql`
+    query health {
+      indexingStatusForCurrentVersion(subgraphName: "${subgraphName}") {
+        synced
+        health
+        chains {
+          chainHeadBlock {
+            number
+          }
+          latestBlock {
+            number
+          }
         }
       }
     }
-  }
-`
+  `
+}
 
 export const GET_BLOCK = gql`
   query blocks($timestampFrom: Int!, $timestampTo: Int!) {

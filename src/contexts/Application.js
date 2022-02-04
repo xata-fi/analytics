@@ -1,9 +1,10 @@
 import React, { createContext, useContext, useReducer, useMemo, useCallback, useState, useEffect } from 'react'
+import { usePrevious } from 'react-use'
 import { timeframeOptions, TOKEN_WHITELIST } from '../constants'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { getClient } from '../apollo/client'
-import { SUBGRAPH_HEALTH } from '../apollo/queries'
+import { getHealthQuery } from '../apollo/queries'
 dayjs.extend(utc)
 
 const UPDATE = 'UPDATE'
@@ -199,6 +200,7 @@ export function useLatestBlocks() {
   const [network] = useNetwork()
   const [state, { updateLatestBlock, updateHeadBlock }] = useApplicationContext()
 
+  const prevNetwork = usePrevious(network)
   const latestBlock = state?.[LATEST_BLOCK]
   const headBlock = state?.[HEAD_BLOCK]
 
@@ -207,7 +209,7 @@ export function useLatestBlocks() {
     async function fetch() {
       healthClient
         .query({
-          query: SUBGRAPH_HEALTH,
+          query: getHealthQuery(network),
         })
         .then((res) => {
           const syncedBlock = res.data.indexingStatusForCurrentVersion.chains[0].latestBlock.number
@@ -221,10 +223,10 @@ export function useLatestBlocks() {
           console.log(e)
         })
     }
-    if (!latestBlock) {
+    if (!latestBlock || prevNetwork !== network) {
       fetch()
     }
-  }, [network, latestBlock, updateHeadBlock, updateLatestBlock])
+  }, [network, prevNetwork, latestBlock, updateHeadBlock, updateLatestBlock])
 
   return [latestBlock, headBlock]
 }
