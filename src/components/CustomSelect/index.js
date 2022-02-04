@@ -102,6 +102,7 @@ const CustomSelect = ({ options, persistedValue, labels, onChange }) => {
       >
         {options.map((option, index) => (
           <Option
+            key={option}
             onClick={() => {
               if (option) onChange(option)
               setLabel(labels[index])
