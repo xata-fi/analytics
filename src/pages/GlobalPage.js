@@ -10,10 +10,12 @@ import TopTokenList from '../components/TokenList'
 import TxnList from '../components/TxnList'
 import GlobalChart from '../components/GlobalChart'
 import Search from '../components/Search'
+import CustomSelect from '../components/CustomSelect'
 
-import { useGlobalData, useGlobalTransactions } from '../contexts/GlobalData'
+import { useNetwork } from '../contexts/Application'
+import { useGlobalData, useGlobalTransactions, useMEVChartData, useGlobalChartData } from '../contexts/GlobalData'
 import { useAllPairData } from '../contexts/PairData'
-import { useMedia } from 'react-use'
+import { useMedia, usePrevious } from 'react-use'
 import Panel from '../components/Panel'
 import { useAllTokenData } from '../contexts/TokenData'
 import { formattedNum, formattedPercent } from '../utils'
@@ -47,11 +49,13 @@ const GridRow = styled.div`
 
 function GlobalPage() {
   // get data for lists and totals
+  const [network, updateNetwork] = useNetwork()
+  const [, updateMEVChart] = useMEVChartData()
+  const [, , updateChart] = useGlobalChartData()
   const allPairs = useAllPairData()
   const allTokens = useAllTokenData()
   const transactions = useGlobalTransactions()
   const { totalLiquidityUSD, oneDayVolumeUSD, volumeChangeUSD, liquidityChangeUSD } = useGlobalData()
-
   // breakpoints
   const below800 = useMedia('(max-width: 800px)')
 
@@ -66,13 +70,30 @@ function GlobalPage() {
   // for tracked data on pairs
   const [useTracked, setUseTracked] = useState(true)
 
+  const prevNetwork = usePrevious(network)
+  const onChange = (network) => {
+    if (prevNetwork !== network) {
+      updateNetwork(network)
+      updateMEVChart(undefined)
+      updateChart(undefined)
+    }
+  }
+
   return (
     <PageWrapper>
       <ThemedBackground backgroundColor={transparentize(0.6, '#f88f01')} />
       <ContentWrapper>
         <div>
           <AutoColumn gap="24px" style={{ paddingBottom: '24px' }}>
-            <TYPE.largeHeader>{below800 ? 'XATA Analytics' : 'XATA Analytics'}</TYPE.largeHeader>
+            <AutoRow gap="6px">
+              <TYPE.largeHeader>{below800 ? 'XATA Analytics' : 'XATA Analytics'}</TYPE.largeHeader>
+              <CustomSelect
+                options={['BINANCE_SMART_CHAIN', 'POLYGON']}
+                labels={['Binance Smart Chain', 'Polygon']}
+                persistedValue={network}
+                onChange={onChange}
+              />
+            </AutoRow>
             <Search />
           </AutoColumn>
           {below800 && ( // additional mobile card that shows on top of charts
@@ -114,9 +135,11 @@ function GlobalPage() {
           {!below800 && (
             <>
               <AutoColumn gap="6px">
-                <Panel style={{ height: '100%', minHeight: '300px' }}>
-                  <GlobalChart display="MEV" />
-                </Panel>
+                {network === 'BINANCE_SMART_CHAIN' && (
+                  <Panel style={{ height: '100%', minHeight: '300px' }}>
+                    <GlobalChart display="MEV" />
+                  </Panel>
+                )}
                 <GridRow>
                   <Panel style={{ height: '100%', minHeight: '300px' }}>
                     <GlobalChart display="liquidity" />
@@ -127,7 +150,6 @@ function GlobalPage() {
                 </GridRow>
               </AutoColumn>
             </>
-
           )}
           {below800 && (
             <AutoColumn style={{ marginTop: '6px' }} gap="24px">

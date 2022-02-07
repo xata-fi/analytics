@@ -19,7 +19,7 @@ const theme = (darkMode, color) => ({
 
   xataOrange: darkMode ? '#f88f01' : 'black',
 
-  concreteGray: darkMode ? '#292C2F' : '#FAFAFA',
+  concreteGray: darkMode ? '#40444F' : '#FAFAFA',
   inputBackground: darkMode ? '#1F1F1F' : '#FAFAFA',
   shadowColor: darkMode ? '#000' : '#2F80ED',
   mercuryGray: darkMode ? '#333333' : '#E1E1E1',
@@ -72,7 +72,7 @@ const theme = (darkMode, color) => ({
   link: '#2172E5',
   blue: '2f80ed',
 
-  background: darkMode ? 'black' : `radial-gradient(50% 50% at 50% 50%, #f88f0130 0%, #fff 0%)`,
+  background: darkMode ? 'black' : `radial-gradient(50% 50% at 50% 50%, #f88f01 0%, #fff 0%)`,
 })
 
 const TextWrapper = styled(Text)`

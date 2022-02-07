@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useReducer, useMemo, useCallback, useEffect, useState } from 'react'
-import { client, mevClient } from '../apollo/client'
+import { getClient } from '../apollo/client'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import { useTimeframe } from './Application'
+import { useTimeframe, useNetwork } from './Application'
 import {
   getPercentChange,
   getBlockFromTimestamp,
@@ -23,6 +23,7 @@ import {
 import weekOfYear from 'dayjs/plugin/weekOfYear'
 import { useAllPairData } from './PairData'
 import { useTokenChartDataCombined } from './TokenData'
+import { usePrevious } from 'react-use'
 const UPDATE = 'UPDATE'
 const UPDATE_TXNS = 'UPDATE_TXNS'
 const UPDATE_CHART = 'UPDATE_CHART'
@@ -82,8 +83,8 @@ function reducer(state, { type, payload }) {
       return {
         ...state,
         MEVChartData: {
-          daily
-        }
+          daily,
+        },
       }
     }
     case UPDATE_ETH_PRICE: {
@@ -157,8 +158,8 @@ export default function Provider({ children }) {
     dispatch({
       type: UPDATE_MEV_CHART,
       payload: {
-        daily
-      }
+        daily,
+      },
     })
   }, [])
 
@@ -241,7 +242,7 @@ export default function Provider({ children }) {
  * @param {*} oldEthPrice
  */
 
-async function getGlobalData(ethPrice, oldEthPrice) {
+async function getGlobalData(network, ethPrice, oldEthPrice) {
   // data for each day , historic data used for % changes
   let data = {}
   let oneDayData = {}
@@ -256,12 +257,14 @@ async function getGlobalData(ethPrice, oldEthPrice) {
     const utcTwoWeeksBack = utcCurrentTime.subtract(2, 'week').unix()
 
     // get the blocks needed for time travel queries
-    let [oneDayBlock, twoDayBlock, oneWeekBlock, twoWeekBlock] = await getBlocksFromTimestamps([
+    let [oneDayBlock, twoDayBlock, oneWeekBlock, twoWeekBlock] = await getBlocksFromTimestamps(network, [
       utcOneDayBack,
       utcTwoDaysBack,
       utcOneWeekBack,
       utcTwoWeeksBack,
     ])
+
+    const { client } = getClient(network)
 
     // fetch the global data
     let result = await client.query({
@@ -345,12 +348,14 @@ async function getGlobalData(ethPrice, oldEthPrice) {
 
 let checked = false
 
-const getChartData = async (oldestDateToFetch, offsetData) => {
+const getChartData = async (network, oldestDateToFetch, offsetData) => {
   let data = []
   let weeklyData = []
   const utcEndTime = dayjs.utc()
   let skip = 0
   let allFound = false
+
+  const { client } = getClient(network)
 
   try {
     while (!allFound) {
@@ -445,9 +450,11 @@ const getChartData = async (oldestDateToFetch, offsetData) => {
   return [data, weeklyData]
 }
 
-export const getMEVChartData = async (oldestDateToFetch, offsetData) => {
+export const getMEVChartData = async (network) => {
   let data = []
   let allFound = false
+
+  const { mevClient } = getClient(network)
 
   try {
     while (!allFound) {
@@ -460,8 +467,7 @@ export const getMEVChartData = async (oldestDateToFetch, offsetData) => {
         allFound = true
       }
     }
-
-  } catch(e) {
+  } catch (e) {
     console.log(e)
   }
   return data
@@ -470,7 +476,8 @@ export const getMEVChartData = async (oldestDateToFetch, offsetData) => {
 /**
  * Get and format transactions for global page
  */
-const getGlobalTransactions = async () => {
+const getGlobalTransactions = async (network) => {
+  const { client } = getClient(network)
   let transactions = {}
 
   try {
@@ -510,7 +517,7 @@ const getGlobalTransactions = async () => {
 /**
  * Gets the current price  of ETH, 24 hour price, and % change between them
  */
-const getEthPrice = async () => {
+const getEthPrice = async (network) => {
   const utcCurrentTime = dayjs()
   const utcOneDayBack = utcCurrentTime.subtract(1, 'day').startOf('minute').unix()
 
@@ -518,8 +525,10 @@ const getEthPrice = async () => {
   let ethPriceOneDay = 0
   let priceChangeETH = 0
 
+  const { client } = getClient(network)
+
   try {
-    let oneDayBlock = await getBlockFromTimestamp(utcOneDayBack)
+    let oneDayBlock = await getBlockFromTimestamp(network, utcOneDayBack)
     let result = await client.query({
       query: ETH_PRICE(),
       fetchPolicy: 'cache-first',
@@ -546,7 +555,8 @@ const TOKENS_TO_FETCH = 500
 /**
  * Loop through every pair on xata, used for search
  */
-async function getAllPairsOnXata() {
+async function getAllPairsOnXata(network) {
+  const { client } = getClient(network)
   try {
     let allFound = false
     let pairs = []
@@ -574,7 +584,8 @@ async function getAllPairsOnXata() {
 /**
  * Loop through every token on xata, used for search
  */
-async function getAllTokensOnXata() {
+async function getAllTokensOnXata(network) {
+  const { client } = getClient(network)
   try {
     let allFound = false
     let skipCount = 0
@@ -605,27 +616,26 @@ async function getAllTokensOnXata() {
 export function useGlobalData() {
   const [state, { update, updateAllPairsInXata, updateAllTokensInXata }] = useGlobalDataContext()
   const [ethPrice, oldEthPrice] = useEthPrice()
-
+  const [network] = useNetwork()
   const data = state?.globalData
 
   // const combinedVolume = useTokenDataCombined(offsetVolumes)
 
   useEffect(() => {
     async function fetchData() {
-      let globalData = await getGlobalData(ethPrice, oldEthPrice)
+      let globalData = await getGlobalData(network, ethPrice, oldEthPrice)
       globalData && update(globalData)
 
-      let allPairs = await getAllPairsOnXata()
+      let allPairs = await getAllPairsOnXata(network)
       updateAllPairsInXata(allPairs)
 
-      let allTokens = await getAllTokensOnXata()
+      let allTokens = await getAllTokensOnXata(network)
       updateAllTokensInXata(allTokens)
     }
     if (!data && ethPrice && oldEthPrice) {
       fetchData()
     }
-  }, [ethPrice, oldEthPrice, update, data, updateAllPairsInXata, updateAllTokensInXata])
-
+  }, [ethPrice, oldEthPrice, update, data, updateAllPairsInXata, updateAllTokensInXata, network])
   return data || {}
 }
 
@@ -654,29 +664,29 @@ export function useGlobalChartData() {
   // fix for rebass tokens
 
   const combinedData = useTokenChartDataCombined(offsetVolumes)
-
+  const [network] = useNetwork()
   /**
    * Fetch data if none fetched or older data is needed
    */
   useEffect(() => {
     async function fetchData() {
       // historical stuff for chart
-      let [newChartData, newWeeklyData] = await getChartData(oldestDateFetch, combinedData)
+      let [newChartData, newWeeklyData] = await getChartData(network, oldestDateFetch, combinedData)
       updateChart(newChartData, newWeeklyData)
     }
     if (oldestDateFetch && !(chartDataDaily && chartDataWeekly) && combinedData) {
       fetchData()
     }
-  }, [chartDataDaily, chartDataWeekly, combinedData, oldestDateFetch, updateChart])
+  }, [chartDataDaily, chartDataWeekly, combinedData, oldestDateFetch, updateChart, network])
 
-  return [chartDataDaily, chartDataWeekly]
+  return [chartDataDaily, chartDataWeekly, updateChart]
 }
 
 export function useMEVChartData() {
   const [state, { updateMEVChart }] = useGlobalDataContext()
   const [oldestDateFetch, setOldestDateFetched] = useState()
-  const [activeWindow] = useTimeframe() 
-  
+  const [activeWindow] = useTimeframe()
+  const [network] = useNetwork()
   const mevDataDaily = state?.MEVChartData?.daily
 
   /**
@@ -695,44 +705,47 @@ export function useMEVChartData() {
   useEffect(() => {
     async function fetchData() {
       //historical stuff for chart
-      let newChartData = await getMEVChartData()
+      let newChartData = await getMEVChartData(network)
       updateMEVChart(newChartData)
     }
-    if (oldestDateFetch && !mevDataDaily) {
-      fetchData()
-    }
-  }, [mevDataDaily, oldestDateFetch, updateMEVChart])
-  return mevDataDaily
+    // if (oldestDateFetch && !mevDataDaily) {
+    fetchData()
+    // }
+  }, [oldestDateFetch, updateMEVChart, network])
+  return [mevDataDaily, updateMEVChart]
 }
 
 export function useGlobalTransactions() {
   const [state, { updateTransactions }] = useGlobalDataContext()
   const transactions = state?.transactions
+  const [network] = useNetwork()
+  const prevNetwork = usePrevious(network)
   useEffect(() => {
     async function fetchData() {
-      if (!transactions) {
-        let txns = await getGlobalTransactions()
+      if (!transactions || network !== prevNetwork) {
+        let txns = await getGlobalTransactions(network)
         updateTransactions(txns)
       }
     }
     fetchData()
-  }, [updateTransactions, transactions])
+  }, [updateTransactions, transactions, network, prevNetwork])
   return transactions
 }
 
 export function useEthPrice() {
+  const [network] = useNetwork()
   const [state, { updateEthPrice }] = useGlobalDataContext()
   const ethPrice = state?.[ETH_PRICE_KEY]
   const ethPriceOld = state?.['oneDayPrice']
   useEffect(() => {
     async function checkForEthPrice() {
       if (!ethPrice) {
-        let [newPrice, oneDayPrice, priceChange] = await getEthPrice()
+        let [newPrice, oneDayPrice, priceChange] = await getEthPrice(network)
         updateEthPrice(newPrice, oneDayPrice, priceChange)
       }
     }
     checkForEthPrice()
-  }, [ethPrice, updateEthPrice])
+  }, [network, ethPrice, updateEthPrice])
 
   return [ethPrice, ethPriceOld]
 }
@@ -760,8 +773,10 @@ export function useTopLps() {
   let topLps = state?.topLps
 
   const allPairs = useAllPairData()
+  const [network] = useNetwork()
 
   useEffect(() => {
+    const { client } = getClient(network)
     async function fetchData() {
       // get top 20 by reserves
       let topPairs = Object.keys(allPairs)

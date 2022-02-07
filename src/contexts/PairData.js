@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useReducer, useMemo, useCallback, useEffect, useState } from 'react'
 
-import { client } from '../apollo/client'
+import { getClient } from '../apollo/client'
 import {
   PAIR_DATA,
   PAIR_CHART,
@@ -25,7 +25,7 @@ import {
   splitQuery,
 } from '../utils'
 import { timeframeOptions, TRACKED_OVERRIDES } from '../constants'
-import { useLatestBlocks } from './Application'
+import { useLatestBlocks, useNetwork } from './Application'
 import { updateNameData } from '../utils/data'
 
 const UPDATE = 'UPDATE'
@@ -71,7 +71,6 @@ function reducer(state, { type, payload }) {
         return (added[pair.id] = pair)
       })
       return {
-        ...state,
         ...added,
       }
     }
@@ -182,9 +181,11 @@ export default function Provider({ children }) {
   )
 }
 
-async function getBulkPairData(pairList, ethPrice) {
+async function getBulkPairData(network, pairList, ethPrice) {
   const [t1, t2, tWeek] = getTimestampsForChanges()
-  let [{ number: b1 }, { number: b2 }, { number: bWeek }] = await getBlocksFromTimestamps([t1, t2, tWeek])
+  let [{ number: b1 }, { number: b2 }, { number: bWeek }] = await getBlocksFromTimestamps(network, [t1, t2, tWeek])
+
+  const { client } = getClient(network)
 
   try {
     let current = await client.query({
@@ -312,8 +313,10 @@ function parseData(data, oneDayData, twoDayData, oneWeekData, ethPrice, oneDayBl
   return data
 }
 
-const getPairTransactions = async (pairAddress) => {
+const getPairTransactions = async (network, pairAddress) => {
   const transactions = {}
+
+  const { client } = getClient(network)
 
   try {
     let result = await client.query({
@@ -333,11 +336,13 @@ const getPairTransactions = async (pairAddress) => {
   return transactions
 }
 
-const getPairChartData = async (pairAddress) => {
+const getPairChartData = async (network, pairAddress) => {
   let data = []
   const utcEndTime = dayjs.utc()
   let utcStartTime = utcEndTime.subtract(1, 'year').startOf('minute')
   let startTime = utcStartTime.unix() - 1
+
+  const { client } = getClient(network)
 
   try {
     let allFound = false
@@ -400,7 +405,8 @@ const getPairChartData = async (pairAddress) => {
   return data
 }
 
-const getHourlyRateData = async (pairAddress, startTime, latestBlock) => {
+const getHourlyRateData = async (network, pairAddress, startTime, latestBlock) => {
+  const { client } = getClient(network)
   try {
     const utcEndTime = dayjs.utc()
     let time = startTime
@@ -420,7 +426,7 @@ const getHourlyRateData = async (pairAddress, startTime, latestBlock) => {
     // once you have all the timestamps, get the blocks for each timestamp in a bulk query
     let blocks
 
-    blocks = await getBlocksFromTimestamps(timestamps, 100)
+    blocks = await getBlocksFromTimestamps(network, timestamps, 100)
 
     // catch failing case
     if (!blocks || blocks?.length === 0) {
@@ -473,10 +479,15 @@ const getHourlyRateData = async (pairAddress, startTime, latestBlock) => {
 }
 
 export function Updater() {
+  const [network] = useNetwork()
   const [, { updateTopPairs }] = usePairDataContext()
   const [ethPrice] = useEthPrice()
+
   useEffect(() => {
+    const { client } = getClient(network)
     async function getData() {
+      //remove pairs before fetching data
+      updateTopPairs([])
       // get top pairs by reserves
       let {
         data: { pairs },
@@ -491,15 +502,16 @@ export function Updater() {
       })
 
       // get data for every pair in list
-      let topPairs = await getBulkPairData(formattedPairs, ethPrice)
+      let topPairs = await getBulkPairData(network, formattedPairs, ethPrice)
       topPairs && updateTopPairs(topPairs)
     }
     ethPrice && getData()
-  }, [ethPrice, updateTopPairs])
+  }, [network, ethPrice, updateTopPairs])
   return null
 }
 
 export function useHourlyRateData(pairAddress, timeWindow) {
+  const [network] = useNetwork()
   const [state, { updateHourlyData }] = usePairDataContext()
   const chartData = state?.[pairAddress]?.hourlyData?.[timeWindow]
   const [latestBlock] = useLatestBlocks()
@@ -511,13 +523,13 @@ export function useHourlyRateData(pairAddress, timeWindow) {
       timeWindow === timeframeOptions.ALL_TIME ? 1589760000 : currentTime.subtract(1, windowSize).startOf('hour').unix()
 
     async function fetch() {
-      let data = await getHourlyRateData(pairAddress, startTime, latestBlock)
+      let data = await getHourlyRateData(network, pairAddress, startTime, latestBlock)
       updateHourlyData(pairAddress, data, timeWindow)
     }
     if (!chartData) {
       fetch()
     }
-  }, [chartData, timeWindow, pairAddress, updateHourlyData, latestBlock])
+  }, [network, chartData, timeWindow, pairAddress, updateHourlyData, latestBlock])
 
   return chartData
 }
@@ -527,6 +539,7 @@ export function useHourlyRateData(pairAddress, timeWindow) {
  * store these updates to reduce future redundant calls
  */
 export function useDataForList(pairList) {
+  const [network] = useNetwork()
   const [state] = usePairDataContext()
   const [ethPrice] = useEthPrice()
 
@@ -556,6 +569,7 @@ export function useDataForList(pairList) {
       })
 
       let newPairData = await getBulkPairData(
+        network,
         unfetched.map((pair) => {
           return pair
         }),
@@ -567,7 +581,7 @@ export function useDataForList(pairList) {
       setStale(true)
       fetchNewPairData()
     }
-  }, [ethPrice, state, pairList, stale, fetched])
+  }, [network, ethPrice, state, pairList, stale, fetched])
 
   let formattedFetch =
     fetched &&
@@ -582,6 +596,7 @@ export function useDataForList(pairList) {
  * Get all the current and 24hr changes for a pair
  */
 export function usePairData(pairAddress) {
+  const [network] = useNetwork()
   const [state, { update }] = usePairDataContext()
   const [ethPrice] = useEthPrice()
   const pairData = state?.[pairAddress]
@@ -589,14 +604,14 @@ export function usePairData(pairAddress) {
   useEffect(() => {
     async function fetchData() {
       if (!pairData && pairAddress) {
-        let data = await getBulkPairData([pairAddress], ethPrice)
+        let data = await getBulkPairData(network, [pairAddress], ethPrice)
         data && update(pairAddress, data[0])
       }
     }
     if (!pairData && pairAddress && ethPrice && isAddress(pairAddress)) {
       fetchData()
     }
-  }, [pairAddress, pairData, update, ethPrice])
+  }, [network, pairAddress, pairData, update, ethPrice])
 
   return pairData || {}
 }
@@ -605,33 +620,35 @@ export function usePairData(pairAddress) {
  * Get most recent txns for a pair
  */
 export function usePairTransactions(pairAddress) {
+  const [network] = useNetwork()
   const [state, { updatePairTxns }] = usePairDataContext()
   const pairTxns = state?.[pairAddress]?.txns
   useEffect(() => {
     async function checkForTxns() {
       if (!pairTxns) {
-        let transactions = await getPairTransactions(pairAddress)
+        let transactions = await getPairTransactions(network, pairAddress)
         updatePairTxns(pairAddress, transactions)
       }
     }
     checkForTxns()
-  }, [pairTxns, pairAddress, updatePairTxns])
+  }, [network, pairTxns, pairAddress, updatePairTxns])
   return pairTxns
 }
 
 export function usePairChartData(pairAddress) {
+  const [network] = useNetwork()
   const [state, { updateChartData }] = usePairDataContext()
   const chartData = state?.[pairAddress]?.chartData
 
   useEffect(() => {
     async function checkForChartData() {
       if (!chartData) {
-        let data = await getPairChartData(pairAddress)
+        let data = await getPairChartData(network, pairAddress)
         updateChartData(pairAddress, data)
       }
     }
     checkForChartData()
-  }, [chartData, pairAddress, updateChartData])
+  }, [network, chartData, pairAddress, updateChartData])
   return chartData
 }
 

@@ -3,9 +3,9 @@ import styled from 'styled-components'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 
-import { formatTime, formattedNum, urls } from '../../utils'
+import { formatTime, formattedNum, getUrls } from '../../utils'
 import { useMedia } from 'react-use'
-import { useCurrentCurrency } from '../../contexts/Application'
+import { useCurrentCurrency, useNetwork } from '../../contexts/Application'
 import { RowFixed, RowBetween } from '../Row'
 
 import LocalLoader from '../LocalLoader'
@@ -164,6 +164,7 @@ function getTransactionType(event, symbol0, symbol1) {
 
 // @TODO rework into virtualized list
 function TxnList({ transactions, symbol0Override, symbol1Override, color }) {
+  const [network] = useNetwork()
   // page state
   const [page, setPage] = useState(1)
   const [maxPage, setMaxPage] = useState(1)
@@ -280,7 +281,8 @@ function TxnList({ transactions, symbol0Override, symbol1Override, color }) {
   const below1080 = useMedia('(max-width: 1080px)')
   const below780 = useMedia('(max-width: 780px)')
 
-  const { scannerUrl } = chainConfig[process.env.REACT_APP_CHAIN]
+  const { scannerUrl } = chainConfig[network]
+  const urls = getUrls(network)
   const ListItem = ({ item }) => {
     return (
       <DashGrid style={{ height: '48px' }}>

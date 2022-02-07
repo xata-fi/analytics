@@ -38,20 +38,8 @@ const TradingViewChart = ({
 
   // pointer to the chart object
   const [chartCreated, setChartCreated] = useState(false)
-  const dataPrev = usePrevious(data)
 
-  useEffect(() => {
-    if (data !== dataPrev && chartCreated && type === CHART_TYPES.BAR) {
-      // remove the tooltip element
-      let tooltip = document.getElementById('tooltip-id' + title)
-      let node = document.getElementById('test-id' + title)
-      node.removeChild(tooltip)
-      chartCreated.resize(0, 0)
-      setChartCreated()
-    }
-  }, [chartCreated, data, dataPrev, type, title])
-
-  // parese the data and format for tardingview consumption
+  // parse the data and format for tardingview consumption
   const formattedData = data?.map((entry) => {
     return {
       time: dayjs.unix(entry.date).utc().format('YYYY-MM-DD'),

@@ -5,10 +5,11 @@ import { hex } from 'wcag-contrast'
 import { isAddress } from '../utils'
 import copy from 'copy-to-clipboard'
 import { chainConfig } from '../chainConfig'
-
-const { blockchainName } = chainConfig[process.env.REACT_APP_CHAIN]
+import { useNetwork } from '../contexts/Application'
 
 export function useColor(tokenAddress, token) {
+  const [network] = useNetwork()
+  const { blockchainName } = chainConfig[network]
   const [color, setColor] = useState('#2172E5')
   if (tokenAddress) {
     const path = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/${blockchainName}/assets/${isAddress(

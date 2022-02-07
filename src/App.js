@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { ApolloProvider } from 'react-apollo'
-import { client } from './apollo/client'
+import { getClient } from './apollo/client'
 import { Route, Switch, HashRouter, Redirect } from 'react-router-dom'
 import GlobalPage from './pages/GlobalPage'
 import TokenPage from './pages/TokenPage'
@@ -16,7 +16,7 @@ import PinnedData from './components/PinnedData'
 import SideNav from './components/SideNav'
 import AccountLookup from './pages/AccountLookup'
 import LocalLoader from './components/LocalLoader'
-import { useLatestBlocks } from './contexts/Application'
+import { useLatestBlocks, useNetwork } from './contexts/Application'
 import GoogleAnalyticsReporter from './components/analytics/GoogleAnalyticsReporter'
 import { PAIR_BLACKLIST, TOKEN_BLACKLIST } from './constants'
 import { chainConfig } from './chainConfig'
@@ -96,16 +96,22 @@ const LayoutWrapper = ({ children, savedOpen, setSavedOpen }) => {
 const BLOCK_DIFFERENCE_THRESHOLD = 30
 
 function App() {
+  const [network] = useNetwork()
   const [savedOpen, setSavedOpen] = useState(false)
 
   const globalData = useGlobalData()
-  const globalChartData = useGlobalChartData()
-  const [latestBlock, headBlock] = useLatestBlocks()
+  const [dailyData, weeklyData] = useGlobalChartData()
+  const globalChartData = [dailyData, weeklyData]
+  const [latestBlock, headBlock, latestMEVBlock, headMEVBlock] = useLatestBlocks()
 
   // show warning
-  const showWarning = headBlock && latestBlock ? headBlock - latestBlock > BLOCK_DIFFERENCE_THRESHOLD : false
+  const isNonMEVChartSynced = headBlock && latestBlock ? headBlock - latestBlock < BLOCK_DIFFERENCE_THRESHOLD : false
+  const isMEVChartSynced =
+    headMEVBlock && latestMEVBlock ? headMEVBlock - latestMEVBlock < BLOCK_DIFFERENCE_THRESHOLD : false
+  const showWarning = !isNonMEVChartSynced || !isMEVChartSynced
 
-  const { blockchainName } = chainConfig[process.env.REACT_APP_CHAIN]
+  const { client } = getClient(network)
+  const { blockchainName } = chainConfig[network]
 
   return (
     <ApolloProvider client={client}>
@@ -113,7 +119,13 @@ function App() {
         {showWarning && (
           <WarningWrapper>
             <WarningBanner>
-              {`Warning: The data on this site has only synced to ${blockchainName} block ${latestBlock} (out of ${headBlock}). Please check back soon.`}
+              {`Warning: `}
+              {!isMEVChartSynced &&
+                network === 'BINANCE_SMART_CHAIN' &&
+                `Data for MEV chart has only synced to ${blockchainName} block ${latestMEVBlock} (out of ${headMEVBlock}).`}
+              <br />
+              {!isNonMEVChartSynced &&
+                `Data for Volume and Liquidity chart has only synced to ${blockchainName} block ${latestBlock} (out of ${headBlock}).`}
             </WarningBanner>
           </WarningWrapper>
         )}
