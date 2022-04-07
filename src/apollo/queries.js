@@ -424,7 +424,7 @@ export const GLOBAL_DATA = (block) => {
 }
 
 const currentDate = new Date()
-const startDateToFetch = Math.round(currentDate.setDate(currentDate.getDate() - 14) / 1000)
+const startDateToFetch = Math.round(currentDate.setDate(currentDate.getDate() - 120) / 1000)
 export const MEV_CHART = gql`
   query xatadayMEVDatas {
     xatadayMEVDatas(where:{date_gt: ${startDateToFetch}}, orderBy: date, orderDirection: asc) {
