@@ -135,11 +135,9 @@ function GlobalPage() {
           {!below800 && (
             <>
               <AutoColumn gap="6px">
-                {network === 'BINANCE_SMART_CHAIN' && (
-                  <Panel style={{ height: '100%', minHeight: '300px' }}>
-                    <GlobalChart display="MEV" />
-                  </Panel>
-                )}
+                <Panel style={{ height: '100%', minHeight: '300px' }}>
+                  <GlobalChart display="MEV" />
+                </Panel>
                 <GridRow>
                   <Panel style={{ height: '100%', minHeight: '300px' }}>
                     <GlobalChart display="liquidity" />

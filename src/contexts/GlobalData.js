@@ -462,7 +462,15 @@ export const getMEVChartData = async (network) => {
         query: MEV_CHART,
         fetchPolicy: 'cache-first',
       })
-      data = data.concat(result.data.xatadayMEVDatas)
+      if (network === 'POLYGON') {
+        result.data.xatadayMEVDatas.forEach((dataPoint) => {
+          const quickFixUnusedSlippageUSD = (parseFloat(dataPoint.totalUnusedSlippageUSD) / 10 ** 12).toString()
+          dataPoint.totalUnusedSlippageUSD = quickFixUnusedSlippageUSD
+        })
+        data = data.concat(result.data.xatadayMEVDatas)
+      } else {
+        data = data.concat(result.data.xatadayMEVDatas)
+      }
       if (result.data.xatadayMEVDatas.length < 1000) {
         allFound = true
       }
