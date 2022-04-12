@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useReducer, useMemo, useCallback, useEffect, useState } from 'react'
 import { useAllPairData, usePairData } from './PairData'
-import { client, stakingClient } from '../apollo/client'
+import { getClient } from '../apollo/client'
 import {
   USER_TRANSACTIONS,
   USER_POSITIONS,
@@ -8,7 +8,7 @@ import {
   PAIR_DAY_DATA_BULK,
   MINING_POSITIONS,
 } from '../apollo/queries'
-import { useTimeframe, useStartTimestamp } from './Application'
+import { useTimeframe, useStartTimestamp, useNetwork } from './Application'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { useEthPrice } from './GlobalData'
@@ -161,9 +161,11 @@ export default function Provider({ children }) {
 }
 
 export function useUserTransactions(account) {
+  const [network] = useNetwork()
   const [state, { updateTransactions }] = useUserContext()
   const transactions = state?.[account]?.[TRANSACTIONS_KEY]
   useEffect(() => {
+    const { client } = getClient(network)
     async function fetchData(account) {
       try {
         let result = await client.query({
@@ -183,7 +185,7 @@ export function useUserTransactions(account) {
     if (!transactions && account) {
       fetchData(account)
     }
-  }, [account, transactions, updateTransactions])
+  }, [network, account, transactions, updateTransactions])
 
   return transactions || {}
 }
@@ -194,10 +196,12 @@ export function useUserTransactions(account) {
  * @param {*} account
  */
 export function useUserSnapshots(account) {
+  const [network] = useNetwork()
   const [state, { updateUserSnapshots }] = useUserContext()
   const snapshots = state?.[account]?.[USER_SNAPSHOTS]
 
   useEffect(() => {
+    const { client } = getClient(network)
     async function fetchData() {
       try {
         let skip = 0
@@ -229,7 +233,7 @@ export function useUserSnapshots(account) {
     if (!snapshots && account) {
       fetchData()
     }
-  }, [account, snapshots, updateUserSnapshots])
+  }, [network, account, snapshots, updateUserSnapshots])
 
   return snapshots
 }
@@ -241,6 +245,7 @@ export function useUserSnapshots(account) {
  * @param {*} account
  */
 export function useUserPositionChart(position, account) {
+  const [network] = useNetwork()
   const pairAddress = position?.pair?.id
   const [state, { updateUserPairReturns }] = useUserContext()
 
@@ -266,6 +271,7 @@ export function useUserPositionChart(position, account) {
   useEffect(() => {
     async function fetchData() {
       let fetchedData = await getHistoricalPairReturns(
+        network,
         startDateTimestamp,
         currentPairData,
         pairSnapshots,
@@ -286,6 +292,7 @@ export function useUserPositionChart(position, account) {
       fetchData()
     }
   }, [
+    network,
     account,
     startDateTimestamp,
     pairSnapshots,
@@ -306,6 +313,7 @@ export function useUserPositionChart(position, account) {
  * and usd liquidity value.
  */
 export function useUserLiquidityChart(account) {
+  const [network] = useNetwork()
   const history = useUserSnapshots(account)
   // formatetd array to return for chart data
   const [formattedHistory, setFormattedHistory] = useState()
@@ -359,6 +367,8 @@ export function useUserLiquidityChart(account) {
       const pairs = history.reduce((pairList, position) => {
         return [...pairList, position.pair.id]
       }, [])
+
+      const { client } = getClient(network)
 
       // get all day datas where date is in this list, and pair is in pair list
       let {
@@ -438,12 +448,13 @@ export function useUserLiquidityChart(account) {
     if (history && startDateTimestamp && history.length > 0) {
       fetchData()
     }
-  }, [history, startDateTimestamp])
+  }, [network, history, startDateTimestamp])
 
   return formattedHistory
 }
 
 export function useUserPositions(account) {
+  const [network] = useNetwork()
   const [state, { updatePositions }] = useUserContext()
   const positions = state?.[account]?.[POSITIONS_KEY]
 
@@ -451,6 +462,7 @@ export function useUserPositions(account) {
   const [ethPrice] = useEthPrice()
 
   useEffect(() => {
+    const { client } = getClient(network)
     async function fetchData(account) {
       try {
         let result = await client.query({
@@ -463,7 +475,7 @@ export function useUserPositions(account) {
         if (result?.data?.liquidityPositions) {
           let formattedPositions = await Promise.all(
             result?.data?.liquidityPositions.map(async (positionData) => {
-              const returnData = await getLPReturnsOnPair(account, positionData.pair, ethPrice, snapshots)
+              const returnData = await getLPReturnsOnPair(network, account, positionData.pair, ethPrice, snapshots)
               return {
                 ...positionData,
                 ...returnData,
@@ -479,12 +491,13 @@ export function useUserPositions(account) {
     if (!positions && account && ethPrice && snapshots) {
       fetchData(account)
     }
-  }, [account, positions, updatePositions, ethPrice, snapshots])
+  }, [network, account, positions, updatePositions, ethPrice, snapshots])
 
   return positions
 }
 
 export function useMiningPositions(account) {
+  const [network] = useNetwork()
   const [state, { updateMiningPositions }] = useUserContext()
   const allPairData = useAllPairData()
   const miningPositions = state?.[account]?.[MINING_POSITIONS_KEY]
@@ -492,6 +505,7 @@ export function useMiningPositions(account) {
   const snapshots = useUserSnapshots(account)
 
   useEffect(() => {
+    const { stakingClient } = getClient(network)
     async function fetchData(account) {
       try {
         let miningPositionData = []
@@ -516,6 +530,6 @@ export function useMiningPositions(account) {
     if (!miningPositions && account && snapshots) {
       fetchData(account)
     }
-  }, [account, miningPositions, updateMiningPositions, snapshots, allPairData])
+  }, [network, account, miningPositions, updateMiningPositions, snapshots, allPairData])
   return miningPositions
 }

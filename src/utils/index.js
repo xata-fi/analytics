@@ -3,7 +3,7 @@ import { BigNumber } from 'bignumber.js'
 import dayjs from 'dayjs'
 import { ethers } from 'ethers'
 import utc from 'dayjs/plugin/utc'
-import { client, blockClient } from '../apollo/client'
+import { getClient } from '../apollo/client'
 import { GET_BLOCK, GET_BLOCKS, SHARE_VALUE } from '../apollo/queries'
 import { Text } from 'rebass'
 import _Decimal from 'decimal.js-light'
@@ -16,8 +16,6 @@ import { chainConfig } from '../chainConfig'
 const Decimal = toFormat(_Decimal)
 BigNumber.set({ EXPONENTIAL_AT: 50 })
 dayjs.extend(utc)
-
-const { scannerUrl } = chainConfig[process.env.REACT_APP_CHAIN]
 
 export function getTimeframe(timeWindow) {
   const utcEndTime = dayjs.utc()
@@ -41,13 +39,11 @@ export function getTimeframe(timeWindow) {
 }
 
 export function getPoolLink(remove = false) {
-  return (
-    `https://app.xata.fi/#/` + (remove ? `remove` : `add`)
-  )
+  return `https://app.xata.fi/#/` + (remove ? `remove` : `add`)
 }
 
 export function getSwapLink() {
-  return "https://app.xata.fi/#/swap"
+  return 'https://app.xata.fi/#/swap'
 }
 
 export function localNumber(val) {
@@ -111,7 +107,6 @@ export async function splitQuery(query, localClient, vars, list, skipCount = 100
       skip += skipCount
     }
   }
-
   return fetchedData
 }
 
@@ -120,7 +115,8 @@ export async function splitQuery(query, localClient, vars, list, skipCount = 100
  * @dev Query speed is optimized by limiting to a 600-second period
  * @param {Int} timestamp in seconds
  */
-export async function getBlockFromTimestamp(timestamp) {
+export async function getBlockFromTimestamp(network, timestamp) {
+  const { blockClient } = getClient(network)
   let result = await blockClient.query({
     query: GET_BLOCK,
     variables: {
@@ -139,11 +135,11 @@ export async function getBlockFromTimestamp(timestamp) {
  * @dev timestamps are returns as they were provided; not the block time.
  * @param {Array} timestamps
  */
-export async function getBlocksFromTimestamps(timestamps, skipCount = 500) {
+export async function getBlocksFromTimestamps(network, timestamps, skipCount = 500) {
   if (timestamps?.length === 0) {
     return []
   }
-
+  const { blockClient } = getClient(network)
   let fetchedData = await splitQuery(GET_BLOCKS, blockClient, [], timestamps, skipCount)
 
   let blocks = []
@@ -188,7 +184,7 @@ export async function getBlocksFromTimestamps(timestamps, skipCount = 500) {
  * @param {String} pairAddress
  * @param {Array} timestamps
  */
-export async function getShareValueOverTime(pairAddress, timestamps) {
+export async function getShareValueOverTime(network, pairAddress, timestamps) {
   if (!timestamps) {
     const utcCurrentTime = dayjs()
     const utcSevenDaysBack = utcCurrentTime.subtract(8, 'day').unix()
@@ -196,8 +192,9 @@ export async function getShareValueOverTime(pairAddress, timestamps) {
   }
 
   // get blocks based on timestamps
-  const blocks = await getBlocksFromTimestamps(timestamps)
+  const blocks = await getBlocksFromTimestamps(network, timestamps)
 
+  const { client } = getClient(network)
   // get historical share values with time travel queries
   let result = await client.query({
     query: SHARE_VALUE(pairAddress, blocks),
@@ -274,11 +271,14 @@ export const setThemeColor = (theme) => document.documentElement.style.setProper
 
 export const Big = (number) => new BigNumber(number)
 
-export const urls = {
-  showTransaction: (tx) => `https://${scannerUrl}/tx/${tx}/`,
-  showAddress: (address) => `https://www.${scannerUrl}/address/${address}/`,
-  showToken: (address) => `https://www.${scannerUrl}/token/${address}/`,
-  showBlock: (block) => `https://${scannerUrl}/block/${block}/`,
+export const getUrls = (network) => {
+  const { scannerUrl } = chainConfig[network]
+  return {
+    showTransaction: (tx) => `https://${scannerUrl}/tx/${tx}/`,
+    showAddress: (address) => `https://www.${scannerUrl}/address/${address}/`,
+    showToken: (address) => `https://www.${scannerUrl}/token/${address}/`,
+    showBlock: (block) => `https://${scannerUrl}/block/${block}/`,
+  }
 }
 
 export const formatTime = (unix) => {

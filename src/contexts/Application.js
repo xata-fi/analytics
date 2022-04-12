@@ -1,9 +1,10 @@
 import React, { createContext, useContext, useReducer, useMemo, useCallback, useState, useEffect } from 'react'
+import { usePrevious } from 'react-use'
 import { timeframeOptions, TOKEN_WHITELIST } from '../constants'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import { healthClient } from '../apollo/client'
-import { SUBGRAPH_HEALTH } from '../apollo/queries'
+import { getClient } from '../apollo/client'
+import { getHealthQuery } from '../apollo/queries'
 dayjs.extend(utc)
 
 const UPDATE = 'UPDATE'
@@ -12,6 +13,7 @@ const UPDATE_SESSION_START = 'UPDATE_SESSION_START'
 const UPDATED_SUPPORTED_TOKENS = 'UPDATED_SUPPORTED_TOKENS'
 const UPDATE_LATEST_BLOCK = 'UPDATE_LATEST_BLOCK'
 const UPDATE_HEAD_BLOCK = 'UPDATE_HEAD_BLOCK'
+const UPDATE_NETWORK = 'UPDATE_NETWORK'
 
 const SUPPORTED_TOKENS = 'SUPPORTED_TOKENS'
 const TIME_KEY = 'TIME_KEY'
@@ -19,6 +21,7 @@ const CURRENCY = 'CURRENCY'
 const SESSION_START = 'SESSION_START'
 const LATEST_BLOCK = 'LATEST_BLOCK'
 const HEAD_BLOCK = 'HEAD_BLOCK'
+const NETWORK = 'NETWORK'
 
 const ApplicationContext = createContext()
 
@@ -66,6 +69,14 @@ function reducer(state, { type, payload }) {
       }
     }
 
+    case UPDATE_NETWORK: {
+      const { network } = payload
+      return {
+        ...state,
+        [NETWORK]: network,
+      }
+    }
+
     case UPDATED_SUPPORTED_TOKENS: {
       const { supportedTokens } = payload
       return {
@@ -83,6 +94,7 @@ function reducer(state, { type, payload }) {
 const INITIAL_STATE = {
   CURRENCY: 'USD',
   TIME_KEY: timeframeOptions.ALL_TIME,
+  NETWORK: 'BINANCE_SMART_CHAIN',
 }
 
 export default function Provider({ children }) {
@@ -143,6 +155,15 @@ export default function Provider({ children }) {
     })
   }, [])
 
+  const updateNetwork = useCallback((network) => {
+    dispatch({
+      type: UPDATE_NETWORK,
+      payload: {
+        network,
+      },
+    })
+  }, [])
+
   return (
     <ApplicationContext.Provider
       value={useMemo(
@@ -155,9 +176,19 @@ export default function Provider({ children }) {
             updateSupportedTokens,
             updateLatestBlock,
             updateHeadBlock,
+            updateNetwork,
           },
         ],
-        [state, update, updateTimeframe, updateSessionStart, updateSupportedTokens, updateLatestBlock, updateHeadBlock]
+        [
+          state,
+          update,
+          updateTimeframe,
+          updateSessionStart,
+          updateSupportedTokens,
+          updateLatestBlock,
+          updateHeadBlock,
+          updateNetwork,
+        ]
       )}
     >
       {children}
@@ -166,16 +197,21 @@ export default function Provider({ children }) {
 }
 
 export function useLatestBlocks() {
+  const [network] = useNetwork()
   const [state, { updateLatestBlock, updateHeadBlock }] = useApplicationContext()
 
+  const prevNetwork = usePrevious(network)
   const latestBlock = state?.[LATEST_BLOCK]
   const headBlock = state?.[HEAD_BLOCK]
+  const [headMEVBlock, setHeadMEVBlock] = useState()
+  const [latestMEVBlock, setLatestMEVBlock] = useState()
 
   useEffect(() => {
+    const { healthClient } = getClient(network)
     async function fetch() {
       healthClient
         .query({
-          query: SUBGRAPH_HEALTH,
+          query: getHealthQuery(network, false),
         })
         .then((res) => {
           const syncedBlock = res.data.indexingStatusForCurrentVersion.chains[0].latestBlock.number
@@ -189,12 +225,36 @@ export function useLatestBlocks() {
           console.log(e)
         })
     }
-    if (!latestBlock) {
+    if (!latestBlock || prevNetwork !== network) {
       fetch()
     }
-  }, [latestBlock, updateHeadBlock, updateLatestBlock])
+  }, [network, prevNetwork, latestBlock, updateHeadBlock, updateLatestBlock])
 
-  return [latestBlock, headBlock]
+  useEffect(() => {
+    const { healthClient } = getClient(network)
+    async function fetchMEVLatest() {
+      healthClient
+        .query({
+          query: getHealthQuery(network, true),
+        })
+        .then((res) => {
+          const syncedBlock = res.data.indexingStatusForCurrentVersion.chains[0].latestBlock.number
+          const headBlock = res.data.indexingStatusForCurrentVersion.chains[0].chainHeadBlock.number
+          if (syncedBlock && headBlock) {
+            setLatestMEVBlock(syncedBlock)
+            setHeadMEVBlock(headBlock)
+          }
+        })
+        .catch((e) => {
+          console.log(e)
+        })
+    }
+    if (!latestMEVBlock || prevNetwork !== network) {
+      fetchMEVLatest()
+    }
+  }, [network, prevNetwork, latestMEVBlock, headMEVBlock])
+
+  return [latestBlock, headBlock, latestMEVBlock, headMEVBlock]
 }
 
 export function useCurrentCurrency() {
@@ -277,4 +337,10 @@ export function useListedTokens() {
   }, [updateSupportedTokens, supportedTokens])
 
   return supportedTokens
+}
+
+export function useNetwork() {
+  const [state, { updateNetwork }] = useApplicationContext()
+  const network = state?.['NETWORK']
+  return [network, updateNetwork]
 }

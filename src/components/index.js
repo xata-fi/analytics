@@ -4,7 +4,8 @@ import { Text, Box } from 'rebass'
 
 import Link from './Link'
 
-import { urls } from '../utils'
+import { getUrls } from '../utils'
+import { useNetwork } from '../contexts/Application'
 
 const Divider = styled(Box)`
   height: 1px;
@@ -54,17 +55,21 @@ const Hint = ({ children, ...rest }) => (
   </Text>
 )
 
-const Address = ({ address, token, ...rest }) => (
-  <Link
-    color="button"
-    href={token ? urls.showToken(address) : urls.showAddress(address)}
-    external
-    style={{ wordBreak: 'break-all' }}
-    {...rest}
-  >
-    {address}
-  </Link>
-)
+const Address = ({ address, token, ...rest }) => {
+  const [network] = useNetwork()
+  const urls = getUrls(network)
+  return (
+    <Link
+      color="button"
+      href={token ? urls.showToken(address) : urls.showAddress(address)}
+      external
+      style={{ wordBreak: 'break-all' }}
+      {...rest}
+    >
+      {address}
+    </Link>
+  )
+}
 
 export const Hover = styled.div`
   :hover {

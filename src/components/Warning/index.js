@@ -9,6 +9,7 @@ import { AutoColumn } from '../Column'
 import { Hover } from '..'
 import Link from '../Link'
 import { useMedia } from 'react-use'
+import { useNetwork } from '../../contexts/Application'
 import { chainConfig } from '../../chainConfig'
 
 const WarningWrapper = styled.div`
@@ -33,28 +34,28 @@ const StyledWarningIcon = styled(AlertTriangle)`
   stroke: red;
 `
 
-const { blockchainName, scannerUrl, scannerName, tokenStandard } = chainConfig[process.env.REACT_APP_CHAIN]
-
 export default function Warning({ type, show, setShow, address }) {
+  const [network] = useNetwork()
+  const { blockchainName, scannerUrl, scannerName, tokenStandard } = chainConfig[network]
   const below800 = useMedia('(max-width: 800px)')
 
   const textContent = below800 ? (
     <div>
       <Text fontWeight={500} lineHeight={'145.23%'} mt={'10px'}>
-        Anyone can create and name any {tokenStandard} token on {blockchainName}, including creating fake versions of existing tokens and
-        tokens that claim to represent projects that do not have a token.
+        Anyone can create and name any {tokenStandard} token on {blockchainName}, including creating fake versions of
+        existing tokens and tokens that claim to represent projects that do not have a token.
       </Text>
       <Text fontWeight={500} lineHeight={'145.23%'} mt={'10px'}>
-        Similar to {scannerName}, this site automatically tracks analytics for all {tokenStandard} tokens independent of token
-      integrity. Please do your own research before interacting with any {tokenStandard} token.
+        Similar to {scannerName}, this site automatically tracks analytics for all {tokenStandard} tokens independent of
+        token integrity. Please do your own research before interacting with any {tokenStandard} token.
       </Text>
     </div>
   ) : (
     <Text fontWeight={500} lineHeight={'145.23%'} mt={'10px'}>
-      Anyone can create and name any {tokenStandard} token on {blockchainName}, including creating fake versions of existing tokens and
-      tokens that claim to represent projects that do not have a token. Similar to {scannerName}, this site automatically
-      tracks analytics for all {tokenStandard} tokens independent of token integrity. Please do your own research before
-      interacting with any {tokenStandard} token.
+      Anyone can create and name any {tokenStandard} token on {blockchainName}, including creating fake versions of
+      existing tokens and tokens that claim to represent projects that do not have a token. Similar to {scannerName},
+      this site automatically tracks analytics for all {tokenStandard} tokens independent of token integrity. Please do
+      your own research before interacting with any {tokenStandard} token.
     </Text>
   )
 

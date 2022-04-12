@@ -74,7 +74,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy": "npx netlify deploy"
   },
   "browserslist": {
     "production": [
@@ -88,5 +89,8 @@
       "last 1 safari version"
     ]
   },
-  "license": "GPL-3.0-or-later"
+  "license": "GPL-3.0-or-later",
+  "dependencies": {
+    "netlify-cli": "^8.15.0"
+  }
 }
