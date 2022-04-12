@@ -1,22 +1,23 @@
 {
   "files": {
-    "main.js": "./static/js/main.12173e32.chunk.js",
-    "main.js.map": "./static/js/main.12173e32.chunk.js.map",
+    "main.js": "./static/js/main.3a4a54bb.chunk.js",
+    "main.js.map": "./static/js/main.3a4a54bb.chunk.js.map",
     "runtime-main.js": "./static/js/runtime-main.fc23a649.js",
     "runtime-main.js.map": "./static/js/runtime-main.fc23a649.js.map",
-    "static/js/2.0e83d75c.chunk.js": "./static/js/2.0e83d75c.chunk.js",
-    "static/js/2.0e83d75c.chunk.js.map": "./static/js/2.0e83d75c.chunk.js.map",
+    "static/js/2.8608fc41.chunk.js": "./static/js/2.8608fc41.chunk.js",
+    "static/js/2.8608fc41.chunk.js.map": "./static/js/2.8608fc41.chunk.js.map",
     "index.html": "./index.html",
-    "precache-manifest.a2c59d05d90d4073f141bfff41d693dc.js": "./precache-manifest.a2c59d05d90d4073f141bfff41d693dc.js",
+    "precache-manifest.376ec5a54428c7b6ecb3d8d045b90ccf.js": "./precache-manifest.376ec5a54428c7b6ecb3d8d045b90ccf.js",
     "service-worker.js": "./service-worker.js",
-    "static/js/2.0e83d75c.chunk.js.LICENSE.txt": "./static/js/2.0e83d75c.chunk.js.LICENSE.txt",
+    "static/js/2.8608fc41.chunk.js.LICENSE.txt": "./static/js/2.8608fc41.chunk.js.LICENSE.txt",
+    "static/media/ata.png": "./static/media/ata.b0a5d75c.png",
     "static/media/eth.png": "./static/media/eth.5fc0c9bd.png",
     "static/media/xata-brand.b5870747.svg": "./static/media/xata-brand.b5870747.svg",
     "static/media/xata-logo.png": "./static/media/xata-logo.0286e04c.png"
   },
   "entrypoints": [
     "static/js/runtime-main.fc23a649.js",
-    "static/js/2.0e83d75c.chunk.js",
-    "static/js/main.12173e32.chunk.js"
+    "static/js/2.8608fc41.chunk.js",
+    "static/js/main.3a4a54bb.chunk.js"
   ]
 }
