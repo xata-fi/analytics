@@ -51,8 +51,6 @@ const TradingViewChart = ({
   const [darkMode] = useDarkModeManager()
   const textColor = darkMode ? 'white' : 'black'
   const previousTheme = usePrevious(darkMode)
-  const [network] = useNetwork()
-  const prevBase = usePrevious(base)
 
   // reference for DOM element to create with chart
   const ref = useRef()
