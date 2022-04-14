@@ -5,10 +5,10 @@ import { useGlobalChartData, useGlobalData, useMEVChartData } from '../../contex
 import { useMedia } from 'react-use'
 import DropdownSelect from '../DropdownSelect'
 import TradingViewChart, { CHART_TYPES } from '../TradingviewChart'
-import { RowFixed } from '../Row'
-import { OptionButton } from '../ButtonStyled'
+// import { RowFixed } from '../Row'
+// import { OptionButton } from '../ButtonStyled'
 import { getTimeframe, getPercentChange } from '../../utils'
-import { TYPE } from '../../Theme'
+// import { TYPE } from '../../Theme'
 
 const CHART_VIEW = {
   VOLUME: 'Volume',
@@ -28,7 +28,8 @@ const GlobalChart = ({ display }) => {
 
   // time window and window size for chart
   const timeWindow = timeframeOptions.ALL_TIME
-  const [volumeWindow, setVolumeWindow] = useState(VOLUME_WINDOW.DAYS)
+  // const [volumeWindow, setVolumeWindow] = useState(VOLUME_WINDOW.DAYS)
+  const [volumeWindow] = useState(VOLUME_WINDOW.DAYS)
 
   // global historical data
   const [dailyData, weeklyData] = useGlobalChartData()

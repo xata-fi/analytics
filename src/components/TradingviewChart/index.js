@@ -237,6 +237,7 @@ const TradingViewChart = ({
     type,
     useWeekly,
     width,
+    baseIsEqual,
   ])
 
   // responsiveness
