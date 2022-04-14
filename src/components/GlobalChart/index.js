@@ -105,7 +105,7 @@ const GlobalChart = ({ display }) => {
             field={volumeWindow === VOLUME_WINDOW.WEEKLY ? 'weeklyVolumeUSD' : 'dailyVolumeUSD'}
             width={width}
             type={CHART_TYPES.BAR}
-            useWeekly={volumeWindow === VOLUME_WINDOW.WEEKLY}
+            // useWeekly={volumeWindow === VOLUME_WINDOW.WEEKLY}
           />
         </ResponsiveContainer>
       )}
@@ -113,7 +113,7 @@ const GlobalChart = ({ display }) => {
         <ResponsiveContainer aspect={60 / 28}>
           <TradingViewChart
             data={dailyMEVData}
-            base={latestTotalMEV}
+            base={parseFloat(latestTotalMEV)}
             baseChange={latestMEVChange}
             title="Cumulative MEV Protected"
             field="totalUnusedSlippageUSD"
@@ -122,7 +122,7 @@ const GlobalChart = ({ display }) => {
           />
         </ResponsiveContainer>
       )}
-      {display === 'volume' && (
+      {/* {display === 'volume' && (
         <RowFixed
           style={{
             bottom: '70px',
@@ -145,7 +145,7 @@ const GlobalChart = ({ display }) => {
             <TYPE.body>W</TYPE.body>
           </OptionButton>
         </RowFixed>
-      )}
+      )} */}
     </>
   ) : (
     ''
