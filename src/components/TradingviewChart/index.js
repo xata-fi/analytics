@@ -84,7 +84,8 @@ const TradingViewChart = ({
   } else if (type === CHART_TYPES.BAR) {
     baseIsEqual =
       Math.round(base * 100) / 100 ===
-      formattedData[formattedData.length - 1].value + formattedData[formattedData.length - 2].value
+        formattedData[formattedData.length - 1].value + formattedData[formattedData.length - 2].value ||
+      base === formattedData[formattedData.length - 1].value
   }
   useEffect(() => {
     if (!chartCreated && formattedData && baseIsEqual) {
