@@ -626,6 +626,7 @@ export function useGlobalData() {
   const [ethPrice, oldEthPrice] = useEthPrice()
   const [network] = useNetwork()
   const data = state?.globalData
+  const prevNetwork = usePrevious(network)
 
   // const combinedVolume = useTokenDataCombined(offsetVolumes)
 
@@ -640,10 +641,10 @@ export function useGlobalData() {
       let allTokens = await getAllTokensOnXata(network)
       updateAllTokensInXata(allTokens)
     }
-    if (!data && ethPrice && oldEthPrice) {
+    if ((!data && ethPrice && oldEthPrice) || network !== prevNetwork) {
       fetchData()
     }
-  }, [ethPrice, oldEthPrice, update, data, updateAllPairsInXata, updateAllTokensInXata, network])
+  }, [ethPrice, oldEthPrice, update, data, updateAllPairsInXata, updateAllTokensInXata, network, prevNetwork])
   return data || {}
 }
 
