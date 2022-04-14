@@ -8,7 +8,6 @@ import { usePrevious } from 'react-use'
 import { Play } from 'react-feather'
 import { useDarkModeManager } from '../../contexts/LocalStorage'
 import { IconWrapper } from '..'
-import { useNetwork } from '../../contexts/Application'
 
 dayjs.extend(utc)
 
