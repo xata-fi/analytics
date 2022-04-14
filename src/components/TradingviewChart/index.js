@@ -8,6 +8,7 @@ import { usePrevious } from 'react-use'
 import { Play } from 'react-feather'
 import { useDarkModeManager } from '../../contexts/LocalStorage'
 import { IconWrapper } from '..'
+import { useNetwork } from '../../contexts/Application'
 
 dayjs.extend(utc)
 
@@ -33,9 +34,6 @@ const TradingViewChart = ({
   width,
   useWeekly = false,
 }) => {
-  // reference for DOM element to create with chart
-  const ref = useRef()
-
   // pointer to the chart object
   const [chartCreated, setChartCreated] = useState(false)
 
@@ -53,8 +51,12 @@ const TradingViewChart = ({
   const [darkMode] = useDarkModeManager()
   const textColor = darkMode ? 'white' : 'black'
   const previousTheme = usePrevious(darkMode)
+  const [network] = useNetwork()
+  const prevBase = usePrevious(base)
 
-  // reset the chart if them switches
+  // reference for DOM element to create with chart
+  const ref = useRef()
+  // reset the chart if theme switches
   useEffect(() => {
     if (chartCreated && previousTheme !== darkMode) {
       // remove the tooltip element
@@ -66,9 +68,29 @@ const TradingViewChart = ({
     }
   }, [chartCreated, darkMode, previousTheme, type, title])
 
+  // useEffect(() => {
+  //   if (chartCreated && base !== prevBase) {
+  //     // remove the tooltip element
+  //     let tooltip = document.getElementById('tooltip-id' + title)
+  //     let node = document.getElementById('test-id' + title)
+  //     node.removeChild(tooltip)
+  //     console.log('after node removed: ', node)
+  //     chartCreated.resize(0, 0)
+  //     setChartCreated()
+  //   }
+  // }, [chartCreated, type, title])
+
   // if no chart created yet, create one with options and add to DOM manually
+  let baseIsEqual
+  if (type === CHART_TYPES.AREA) {
+    baseIsEqual = base === formattedData[formattedData.length - 1].value
+  } else if (type === CHART_TYPES.BAR) {
+    baseIsEqual =
+      Math.round(base * 100) / 100 ===
+      formattedData[formattedData.length - 1].value + formattedData[formattedData.length - 2].value
+  }
   useEffect(() => {
-    if (!chartCreated && formattedData) {
+    if (!chartCreated && formattedData && baseIsEqual) {
       var chart = createChart(ref.current, {
         width: width,
         height: HEIGHT,
