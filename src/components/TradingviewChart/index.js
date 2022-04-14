@@ -8,6 +8,7 @@ import { usePrevious } from 'react-use'
 import { Play } from 'react-feather'
 import { useDarkModeManager } from '../../contexts/LocalStorage'
 import { IconWrapper } from '..'
+import { useNetwork } from '../../contexts/Application'
 
 dayjs.extend(utc)
 
@@ -50,6 +51,8 @@ const TradingViewChart = ({
   const [darkMode] = useDarkModeManager()
   const textColor = darkMode ? 'white' : 'black'
   const previousTheme = usePrevious(darkMode)
+  const [network] = useNetwork()
+  const prevBase = usePrevious(base)
 
   // reference for DOM element to create with chart
   const ref = useRef()
