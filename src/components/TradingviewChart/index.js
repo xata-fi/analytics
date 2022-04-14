@@ -65,6 +65,18 @@ const TradingViewChart = ({
     }
   }, [chartCreated, darkMode, previousTheme, type, title])
 
+  // useEffect(() => {
+  //   if (chartCreated && base !== prevBase) {
+  //     // remove the tooltip element
+  //     let tooltip = document.getElementById('tooltip-id' + title)
+  //     let node = document.getElementById('test-id' + title)
+  //     node.removeChild(tooltip)
+  //     console.log('after node removed: ', node)
+  //     chartCreated.resize(0, 0)
+  //     setChartCreated()
+  //   }
+  // }, [chartCreated, type, title])
+
   // if no chart created yet, create one with options and add to DOM manually
   let baseIsEqual
   if (type === CHART_TYPES.AREA) {
