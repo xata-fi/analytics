@@ -5,10 +5,10 @@ import { useGlobalChartData, useGlobalData, useMEVChartData } from '../../contex
 import { useMedia } from 'react-use'
 import DropdownSelect from '../DropdownSelect'
 import TradingViewChart, { CHART_TYPES } from '../TradingviewChart'
-import { RowFixed } from '../Row'
-import { OptionButton } from '../ButtonStyled'
+// import { RowFixed } from '../Row'
+// import { OptionButton } from '../ButtonStyled'
 import { getTimeframe, getPercentChange } from '../../utils'
-import { TYPE } from '../../Theme'
+// import { TYPE } from '../../Theme'
 
 const CHART_VIEW = {
   VOLUME: 'Volume',
